@@ -1,0 +1,20 @@
+<html>
+<head><title>404 Not Found</title></head>
+<body>
+<h1>404 Not Found</h1>
+<ul>
+<li>Code: NoSuchKey</li>
+<li>Message: The specified key does not exist.</li>
+<li>Key: public/bootstrap/5.1.3/css/bootstrap.min.css.map</li>
+<li>RequestId: NQWKWN77FNZWRXEB</li>
+<li>HostId: Gl6sTXGniMw25422cnVdYMrFTXHF7TZcTh8KxW7xnSmKrapYQx85VBKKpMVWEHXnZb2n6G610k1AUdLmz7Vr1Z69GCEmMFULNxFP01mY3Dk=</li>
+</ul>
+<h3>An Error Occurred While Attempting to Retrieve a Custom Error Document</h3>
+<ul>
+<li>Code: NoSuchKey</li>
+<li>Message: The specified key does not exist.</li>
+<li>Key: index.html</li>
+</ul>
+<hr/>
+</body>
+</html>
