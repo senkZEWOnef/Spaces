@@ -1,50 +1,55 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
-import {
-  Container,
-  Row,
-  Col,
-  Card,
-  Badge,
-  Button,
-  Spinner,
-} from "react-bootstrap";
 import { supabase } from "@/lib/supabase";
+import type { Database } from "@/types/supabase";
+import { Container, Row, Col, Card, Spinner } from "react-bootstrap";
+import { useParams } from "next/navigation";
 
-interface Space {
-  id: string;
-  name: string;
-  date: string;
-  description: string | null;
-  image_url: string | null;
-  slug: string | null;
-  views?: number | null;
-  uploads?: number | null;
-  cohosts?: string[];
-}
+type Photo = Database["public"]["Tables"]["photos"]["Row"];
+type Space = Database["public"]["Tables"]["spaces"]["Row"];
 
-export default function EventDetailsPage() {
-  const params = useParams();
-  const slug = typeof params.slug === "string" ? params.slug : "";
-
+export default function GalleryPage() {
+  const { slug } = useParams();
   const [space, setSpace] = useState<Space | null>(null);
+  const [photos, setPhotos] = useState<Photo[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchSpace = async () => {
-      const { data, error } = await supabase
+    const fetchData = async () => {
+      if (typeof slug !== "string") return; // ✅ ensure it’s a string
+
+      setLoading(true);
+
+      // Fetch the space
+      const { data: spaceData, error: spaceError } = await supabase
         .from("spaces")
         .select("*")
         .eq("slug", slug)
         .single();
+      if (spaceError) {
+        console.error(spaceError);
+        setLoading(false);
+        return;
+      }
+      setSpace(spaceData);
 
-      if (!error) setSpace(data);
+      // Fetch approved photos
+      const { data: photoData, error: photoError } = await supabase
+        .from("photos")
+        .select("*")
+        .eq("space_id", spaceData.id)
+        .eq("approved", true);
+      if (photoError) {
+        console.error(photoError);
+      } else {
+        setPhotos(photoData || []);
+      }
+
       setLoading(false);
     };
 
-    fetchSpace();
+    fetchData();
   }, [slug]);
 
   if (loading) {
@@ -58,7 +63,7 @@ export default function EventDetailsPage() {
   if (!space) {
     return (
       <section className="bg-dark text-white min-vh-100 d-flex justify-content-center align-items-center">
-        <p>Event not found.</p>
+        <p>Space not found.</p>
       </section>
     );
   }
@@ -66,60 +71,36 @@ export default function EventDetailsPage() {
   return (
     <section className="bg-dark text-white py-5 min-vh-100">
       <Container>
-        <Row className="mb-4">
-          <Col md={6}>
-            <Card className="bg-secondary border-0 shadow-sm">
-              <Card.Img
-                src={space.image_url}
-                alt={space.name}
-                style={{ height: "300px", objectFit: "cover" }}
-              />
-            </Card>
-          </Col>
-          <Col md={6}>
-            <h2>{space.name}</h2>
-            <p className="text-muted">{space.date}</p>
-            <p>{space.description}</p>
-
-            <div className="my-3">
-              <Badge bg="info" className="me-2">
-                {space.views ?? 0} Views
-              </Badge>
-              <Badge bg="success">{space.uploads ?? 0} Uploads</Badge>
-            </div>
-
-            <h5 className="mt-4">Cohosts:</h5>
-            <ul>
-              {(space.cohosts ?? []).map((email, idx) => (
-                <li key={idx}>{email}</li>
-              ))}
-            </ul>
-
-            <Button
-              href={`/spaces/${slug}/upload`}
-              variant="warning"
-              className="mt-3 me-2"
-            >
-              Upload Photos
-            </Button>
-
-            <Button
-              href={`/spaces/${slug}/gallery`}
-              variant="outline-light"
-              className="mt-3 me-2"
-            >
-              View Gallery
-            </Button>
-
-            <Button
-              variant="outline-warning"
-              className="mt-3"
-              href={`/spaces/${slug}/moderate`}
-            >
-              Moderate Content
-            </Button>
-          </Col>
-        </Row>
+        <h1 className="text-center mb-4">{space.name} — Gallery</h1>
+        {photos.length === 0 ? (
+          <p className="text-center">No approved photos yet.</p>
+        ) : (
+          <Row xs={1} sm={2} md={3} lg={4} className="g-4">
+            {photos.map((photo) => (
+              <Col key={photo.id}>
+                <Card
+                  bg="secondary"
+                  text="white"
+                  className="h-100 border-0 shadow-sm"
+                >
+                  <Card.Img
+                    src={photo.image_url || "/placeholder.jpg"}
+                    alt={space.name}
+                    style={{ height: "300px", objectFit: "cover" }}
+                  />
+                  <Card.Body>
+                    <Card.Text>
+                      Uploaded:{" "}
+                      {photo.created_at
+                        ? new Date(photo.created_at).toLocaleDateString()
+                        : "Unknown"}
+                    </Card.Text>
+                  </Card.Body>
+                </Card>
+              </Col>
+            ))}
+          </Row>
+        )}
       </Container>
     </section>
   );
