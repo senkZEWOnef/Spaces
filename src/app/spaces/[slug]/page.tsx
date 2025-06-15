@@ -38,7 +38,7 @@ export default function EventDetailsPage() {
     const fetchData = async () => {
       const cleanSlug = sanitizeSlug(slug as string);
 
-      // Fetch the space
+      // ✅ Fetch the space
       const { data: spaceData, error: spaceError } = await supabase
         .from("spaces")
         .select("*")
@@ -51,9 +51,12 @@ export default function EventDetailsPage() {
         return;
       }
 
-      setSpace(spaceData);
+      setSpace({
+        ...spaceData,
+        slug: spaceData.slug || "",
+      });
 
-      // Fetch cohost emails from view
+      // ✅ Fetch cohost emails from view, filter out nulls safely
       const { data: cohostData, error: cohostError } = await supabase
         .from("cohosts_with_email")
         .select("cohost_email")
@@ -62,7 +65,9 @@ export default function EventDetailsPage() {
       if (cohostError) {
         console.error("Error fetching cohosts:", cohostError);
       } else {
-        const emails = cohostData.map((c) => c.cohost_email);
+        const emails = cohostData
+          .map((c) => c.cohost_email)
+          .filter((e): e is string => e !== null);
         setCohosts(emails);
       }
 
