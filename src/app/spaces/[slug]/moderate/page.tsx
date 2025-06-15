@@ -1,107 +1,90 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
-import { Container, Row, Col, Card, Button, Spinner } from "react-bootstrap";
 import { supabase } from "@/lib/supabase";
-import { Photo } from "@/types";
+import type { Database } from "@/types/supabase";
+import { useParams } from "next/navigation";
+import { Card, Button, Spinner } from "react-bootstrap";
+
+// ✅ caption is optional
+type Photo = Database["public"]["Tables"]["photos"]["Row"] & {
+  caption?: string | null;
+};
 
 export default function ModeratePage() {
-  const { slug } = useParams();
+  const params = useParams();
+  const slug = typeof params.slug === "string" ? params.slug : "";
+
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [loading, setLoading] = useState(true);
-  const [submitting, setSubmitting] = useState(false);
 
-  const fetchPhotos = async () => {
-    setLoading(true);
-    const { data, error } = await supabase
-      .from("photos")
-      .select("*")
-      .eq("space_slug", slug)
-      .order("created_at", { ascending: false });
+  useEffect(() => {
+    if (!slug) return;
 
-    if (error) console.error("Error fetching photos:", error);
-    else setPhotos(data as Photo[]);
+    const fetchPhotos = async () => {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from("photos")
+        .select("*")
+        .eq("space_slug", slug)
+        .order("created_at", { ascending: false });
 
-    setLoading(false);
-  };
+      if (error) console.error("Error fetching photos:", error);
+      else setPhotos(data ?? []);
+      setLoading(false);
+    };
 
-  const updateApproval = async (id: string, approved: boolean) => {
-    setSubmitting(true);
+    fetchPhotos();
+  }, [slug]);
+
+  const handleApproval = async (id: string, approved: boolean) => {
     const { error } = await supabase
       .from("photos")
       .update({ approved })
       .eq("id", id);
 
     if (error) {
-      console.error("Approval error:", error);
-    } else {
-      setPhotos((prev) =>
-        prev.map((p) => (p.id === id ? { ...p, approved } : p))
-      );
+      console.error("Error updating approval:", error);
+      return;
     }
 
-    setSubmitting(false);
+    setPhotos((prev) =>
+      prev.map((p) => (p.id === id ? { ...p, approved } : p))
+    );
   };
 
-  useEffect(() => {
-    fetchPhotos();
-  }, [slug]);
+  if (loading) {
+    return (
+      <section className="min-vh-100 d-flex justify-content-center align-items-center">
+        <Spinner animation="border" variant="dark" />
+      </section>
+    );
+  }
 
   return (
-    <section className="bg-dark text-white py-5 min-vh-100">
-      <Container>
-        <h2 className="mb-4 text-center">Moderate Photos</h2>
-        {loading ? (
-          <div className="text-center">
-            <Spinner animation="border" variant="light" />
-          </div>
-        ) : photos.length === 0 ? (
-          <p className="text-center text-muted">No photos submitted yet.</p>
-        ) : (
-          <Row xs={1} sm={2} md={3} lg={4} className="g-4">
-            {photos.map((photo) => (
-              <Col key={photo.id}>
-                <Card className="bg-secondary text-white border-0 shadow-sm h-100">
-                  <Card.Img
-                    src={photo.url}
-                    alt="Submitted"
-                    style={{ height: "180px", objectFit: "cover" }}
-                  />
-                  <Card.Body>
-                    <p>
-                      <strong>Status:</strong>{" "}
-                      {photo.approved ? (
-                        <span className="text-success">Approved</span>
-                      ) : (
-                        <span className="text-warning">Pending</span>
-                      )}
-                    </p>
-                    <div className="d-flex gap-2">
-                      <Button
-                        variant="success"
-                        size="sm"
-                        disabled={submitting}
-                        onClick={() => updateApproval(photo.id, true)}
-                      >
-                        Approve
-                      </Button>
-                      <Button
-                        variant="danger"
-                        size="sm"
-                        disabled={submitting}
-                        onClick={() => updateApproval(photo.id, false)}
-                      >
-                        Reject
-                      </Button>
-                    </div>
-                  </Card.Body>
-                </Card>
-              </Col>
-            ))}
-          </Row>
-        )}
-      </Container>
-    </section>
+    <main className="p-4">
+      <h1 className="mb-4">Moderate Photos for &quot;{slug}&quot;</h1>
+
+      <div className="d-flex flex-wrap gap-4">
+        {photos.map((photo) => (
+          <Card key={photo.id} style={{ width: "18rem" }}>
+            <Card.Img
+              src={photo.image_url || ""}
+              alt={photo.caption || ""}
+              style={{ height: "300px", objectFit: "cover" }}
+            />
+            <Card.Body>
+              <Card.Title>{photo.caption || "No caption"}</Card.Title>
+              <Button
+                variant={photo.approved ? "danger" : "success"}
+                onClick={() => handleApproval(photo.id, !photo.approved)}
+              >
+                {photo.approved ? "Reject" : "Approve"}
+              </Button>
+            </Card.Body>
+          </Card>
+        ))}
+      </div>
+    </main>
   );
 }
