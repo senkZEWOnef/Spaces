@@ -1,19 +1,23 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter, useParams } from "next/navigation";
+import { Spinner, Card, Button } from "react-bootstrap";
 import { supabase } from "@/lib/supabase";
-import type { Database } from "@/types/supabase";
-import { useParams } from "next/navigation";
-import { Card, Button, Spinner } from "react-bootstrap";
 
-// ✅ caption is optional
-type Photo = Database["public"]["Tables"]["photos"]["Row"] & {
-  caption?: string | null;
+type Photo = {
+  id: string;
+  image_url: string | null;
+  approved: boolean | null;
+  created_at: string | null;
+  space_id: string | null;
+  uploaded_by: string | null;
+  caption: string | null; // ✅ If you don’t have this in DB, remove or handle null.
 };
 
 export default function ModeratePage() {
   const params = useParams();
-  const slug = typeof params.slug === "string" ? params.slug : "";
+  const slug = params.slug as string; // ✅ Always cast to string to fix TS error
 
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [loading, setLoading] = useState(true);
@@ -22,69 +26,78 @@ export default function ModeratePage() {
     if (!slug) return;
 
     const fetchPhotos = async () => {
-      setLoading(true);
       const { data, error } = await supabase
         .from("photos")
         .select("*")
-        .eq("space_slug", slug)
+        .eq("space_slug", slug) // ✅ matches your DB field
         .order("created_at", { ascending: false });
 
-      if (error) console.error("Error fetching photos:", error);
-      else setPhotos(data ?? []);
+      if (error) {
+        console.error("Error fetching photos:", error);
+      } else {
+        setPhotos(data as Photo[]); // ✅ ensure cast matches Photo[]
+      }
+
       setLoading(false);
     };
 
     fetchPhotos();
   }, [slug]);
 
-  const handleApproval = async (id: string, approved: boolean) => {
-    const { error } = await supabase
+  const toggleApproval = async (photoId: string, approve: boolean) => {
+    await supabase
       .from("photos")
-      .update({ approved })
-      .eq("id", id);
-
-    if (error) {
-      console.error("Error updating approval:", error);
-      return;
-    }
+      .update({ approved: approve })
+      .eq("id", photoId);
 
     setPhotos((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, approved } : p))
+      prev.map((p) => (p.id === photoId ? { ...p, approved: approve } : p))
     );
   };
 
   if (loading) {
     return (
-      <section className="min-vh-100 d-flex justify-content-center align-items-center">
-        <Spinner animation="border" variant="dark" />
+      <section className="bg-dark text-white min-vh-100 d-flex justify-content-center align-items-center">
+        <Spinner animation="border" variant="light" />
       </section>
     );
   }
 
   return (
-    <main className="p-4">
-      <h1 className="mb-4">Moderate Photos for &quot;{slug}&quot;</h1>
-
+    <section className="bg-dark text-white min-vh-100 p-5">
+      <h1 className="mb-4">Moderate Photos for Space: {slug}</h1>
       <div className="d-flex flex-wrap gap-4">
         {photos.map((photo) => (
           <Card key={photo.id} style={{ width: "18rem" }}>
             <Card.Img
-              src={photo.image_url || ""}
-              alt={photo.caption || ""}
-              style={{ height: "300px", objectFit: "cover" }}
+              variant="top"
+              src={photo.image_url || "/sampleimage1.jpg"}
+              style={{ height: "160px", objectFit: "cover" }}
             />
             <Card.Body>
               <Card.Title>{photo.caption || "No caption"}</Card.Title>
-              <Button
-                variant={photo.approved ? "danger" : "success"}
-                onClick={() => handleApproval(photo.id, !photo.approved)}
-              >
-                {photo.approved ? "Reject" : "Approve"}
-              </Button>
+              <Card.Text>
+                Uploaded by: {photo.uploaded_by || "Unknown"}
+              </Card.Text>
+              {photo.approved ? (
+                <Button
+                  variant="danger"
+                  onClick={() => toggleApproval(photo.id, false)}
+                >
+                  Disapprove
+                </Button>
+              ) : (
+                <Button
+                  variant="success"
+                  onClick={() => toggleApproval(photo.id, true)}
+                >
+                  Approve
+                </Button>
+              )}
             </Card.Body>
           </Card>
         ))}
       </div>
-    </main>
+    </section>
   );
 }
