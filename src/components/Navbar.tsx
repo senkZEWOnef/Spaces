@@ -2,38 +2,55 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Navbar, Container, Nav, NavDropdown } from "react-bootstrap";
+import { Navbar, Container, Nav, NavDropdown, Badge } from "react-bootstrap";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import type { User } from "@supabase/supabase-js";
 
 export default function SiteNavbar() {
   const [user, setUser] = useState<User | null>(null);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [role, setRole] = useState<string | null>(null);
   const router = useRouter();
 
+  // Get user and role from Supabase
   useEffect(() => {
     const checkUser = async () => {
       const { data } = await supabase.auth.getUser();
       setUser(data.user || null);
 
       if (data.user) {
-        const { data: userData } = await supabase
+        const { data: userData, error } = await supabase
           .from("users")
           .select("role")
           .eq("id", data.user.id)
           .single();
-        setIsAdmin(userData?.role === "admin");
+
+        if (error) console.error("Role fetch error:", error);
+        setRole(userData?.role ?? null);
+      } else {
+        setRole(null);
       }
     };
 
     checkUser();
 
     const { data: listener } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
+      async (_event, session) => {
         setUser(session?.user || null);
+
+        if (session?.user) {
+          const { data: userData } = await supabase
+            .from("users")
+            .select("role")
+            .eq("id", session.user.id)
+            .single();
+          setRole(userData?.role ?? null);
+        } else {
+          setRole(null);
+        }
       }
     );
+
     return () => {
       listener?.subscription?.unsubscribe();
     };
@@ -59,12 +76,14 @@ export default function SiteNavbar() {
             <Nav.Link as={Link} href="/create-space">
               Create Space
             </Nav.Link>
+
             {user && (
               <Nav.Link as={Link} href="/dashboard">
                 Dashboard
               </Nav.Link>
             )}
-            {isAdmin && (
+
+            {role === "admin" && (
               <NavDropdown title="Admin Tools" id="admin-tools">
                 <NavDropdown.Item as={Link} href="/admin/users">
                   Manage Users
@@ -77,10 +96,16 @@ export default function SiteNavbar() {
                 </NavDropdown.Item>
               </NavDropdown>
             )}
+
             {user ? (
               <>
                 <span className="navbar-text text-light me-2">
-                  {user.email?.split("@")[0]}
+                  {user.email?.split("@")[0]}{" "}
+                  {role === "admin" && (
+                    <Badge bg="warning" className="ms-1">
+                      Admin
+                    </Badge>
+                  )}
                 </span>
                 <Nav.Link onClick={handleLogout} className="text-warning">
                   Sign Out

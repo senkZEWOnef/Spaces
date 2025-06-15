@@ -3,8 +3,7 @@
 import React, { useState } from "react";
 import { Container, Card, Form, Button } from "react-bootstrap";
 import { useRouter } from "next/navigation";
-import { auth } from "@/lib/firebase";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { supabase } from "@/lib/supabase";
 import Link from "next/link";
 
 export default function SignUpPage() {
@@ -14,16 +13,16 @@ export default function SignUpPage() {
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
-    try {
-      await createUserWithEmailAndPassword(auth, email, password);
-      alert("Signup successful!");
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+    });
+
+    if (error) {
+      alert("Signup error: " + error.message);
+    } else {
+      alert("Signup successful! Please check your email.");
       router.push("/spaces");
-    } catch (error) {
-      if (error instanceof Error) {
-        alert(error.message);
-      } else {
-        alert("An unexpected error occurred.");
-      }
     }
   };
 
