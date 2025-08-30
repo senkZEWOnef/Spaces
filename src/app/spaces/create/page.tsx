@@ -1,11 +1,16 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Container, Card, Form, Button } from "react-bootstrap";
+import { Container, Card, Form, Button, Alert } from "react-bootstrap";
 import Link from "next/link";
+import { supabase } from "@/lib/supabase";
 
 export default function CreateSpacePage() {
   const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [date, setDate] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const router = useRouter();
 
   const generateSlug = (name: string) => {
@@ -16,11 +21,67 @@ export default function CreateSpacePage() {
       .replace(/[^a-z0-9\-]/g, "");
   };
 
-  const handleCreate = (e: React.FormEvent) => {
+  const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
-    const slug = generateSlug(name);
-    console.log("Creating space:", name, "➡️ Slug:", slug);
-    router.push(`/spaces/${slug}`);
+    setLoading(true);
+    setError("");
+    
+    try {
+      // Get the current user
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      
+      if (authError || !user) {
+        setError("You must be logged in to create a space");
+        setLoading(false);
+        return;
+      }
+
+      const slug = generateSlug(name);
+      
+      // Check if slug already exists
+      const { data: existingSpace } = await supabase
+        .from('spaces')
+        .select('slug')
+        .eq('slug', slug)
+        .single();
+        
+      if (existingSpace) {
+        setError("A space with this name already exists. Please choose a different name.");
+        setLoading(false);
+        return;
+      }
+      
+      // Create the space
+      const { data: newSpace, error: insertError } = await supabase
+        .from('spaces')
+        .insert({
+          name: name.trim(),
+          description: description.trim() || null,
+          date: date || new Date().toISOString().split('T')[0],
+          slug,
+          created_by: user.id,
+          is_public: true,
+          uploads: 0,
+          views: 0
+        })
+        .select()
+        .single();
+        
+      if (insertError) {
+        console.error('Insert error:', insertError);
+        setError("Failed to create space. Please try again.");
+        setLoading(false);
+        return;
+      }
+      
+      // Redirect to the new space
+      router.push(`/spaces/${slug}`);
+      
+    } catch (err) {
+      console.error('Create space error:', err);
+      setError("An unexpected error occurred. Please try again.");
+      setLoading(false);
+    }
   };
 
   return (
@@ -53,6 +114,9 @@ export default function CreateSpacePage() {
           <h2 className="text-center fw-semibold mb-4">Spaces</h2>
           <Card className="p-4 shadow-sm" style={{ minWidth: "400px" }}>
             <h4 className="fw-bold text-center mb-4">Create Space</h4>
+            
+            {error && <Alert variant="danger">{error}</Alert>}
+            
             <Form onSubmit={handleCreate}>
               <Form.Group className="mb-3">
                 <Form.Label>
@@ -64,6 +128,29 @@ export default function CreateSpacePage() {
                   onChange={(e) => setName(e.target.value)}
                   placeholder="e.g., Bachelor in Cancun"
                   required
+                  disabled={loading}
+                />
+              </Form.Group>
+
+              <Form.Group className="mb-3">
+                <Form.Label>Description</Form.Label>
+                <Form.Control
+                  as="textarea"
+                  rows={3}
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="Tell people what this space is about..."
+                  disabled={loading}
+                />
+              </Form.Group>
+
+              <Form.Group className="mb-3">
+                <Form.Label>Event Date</Form.Label>
+                <Form.Control
+                  type="date"
+                  value={date}
+                  onChange={(e) => setDate(e.target.value)}
+                  disabled={loading}
                 />
               </Form.Group>
 
@@ -71,8 +158,9 @@ export default function CreateSpacePage() {
                 type="submit"
                 className="w-100 mt-2"
                 style={{ backgroundColor: "#ec74f9", border: "none" }}
+                disabled={loading || !name.trim()}
               >
-                Create
+                {loading ? "Creating..." : "Create"}
               </Button>
             </Form>
           </Card>

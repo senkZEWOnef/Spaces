@@ -5,6 +5,7 @@ import { Container, Row, Col, Button, Card } from "react-bootstrap";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import type { Database } from "@/types/supabase";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { useErrorHandler } from "@/hooks/useErrorHandler";
 
 type Space = Database["public"]["Tables"]["spaces"]["Row"];
