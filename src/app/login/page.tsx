@@ -82,7 +82,7 @@ export default function LoginPage() {
             {/* Header */}
             <div className="text-center mb-4">
               <h2 className="fw-bold text-light mb-2">Welcome Back</h2>
-              <p className="text-muted">Sign in to your ShareSpace account</p>
+              <p className="text-muted">Sign in to your Spaces account</p>
             </div>
 
             {/* Error/Success Alert */}

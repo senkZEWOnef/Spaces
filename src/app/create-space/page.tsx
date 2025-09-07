@@ -20,8 +20,10 @@ export default function CreateSpacePage() {
   const [description, setDescription] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [cohostEmail, setCohostEmail] = useState("");
+  const [isPublic, setIsPublic] = useState(true); // Default to public
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const router = useRouter();
 
@@ -29,6 +31,7 @@ export default function CreateSpacePage() {
     e.preventDefault();
     setError("");
     setSuccess("");
+    setLoading(true);
 
     const {
       data: { user },
@@ -37,6 +40,7 @@ export default function CreateSpacePage() {
 
     if (userError || !user) {
       setError("You must be logged in to create a space.");
+      setLoading(false);
       return;
     }
 
@@ -44,9 +48,14 @@ export default function CreateSpacePage() {
     let imageUrl = "";
 
     if (imageFile) {
-      const fileName = `events/${Date.now()}-${imageFile.name}`;
+      // Create safe filename by removing invalid characters and getting extension
+      const fileExt = imageFile.name.split('.').pop()?.toLowerCase() || 'jpg';
+      const timestamp = Date.now();
+      const randomId = Math.random().toString(36).substring(7);
+      const fileName = `events/${timestamp}-${randomId}.${fileExt}`;
+      
       const { error: uploadError } = await supabase.storage
-        .from("space-images")
+        .from("photos")
         .upload(fileName, imageFile, {
           cacheControl: "3600",
           upsert: false,
@@ -54,12 +63,13 @@ export default function CreateSpacePage() {
 
       if (uploadError) {
         setError("Failed to upload image: " + uploadError.message);
+        setLoading(false);
         return;
       }
 
       const {
         data: { publicUrl },
-      } = supabase.storage.from("space-images").getPublicUrl(fileName);
+      } = supabase.storage.from("photos").getPublicUrl(fileName);
 
       imageUrl = publicUrl;
     }
@@ -74,6 +84,7 @@ export default function CreateSpacePage() {
           description,
           image_url: imageUrl,
           created_by: user.id,
+          is_public: isPublic,
         },
       ])
       .select("id")
@@ -81,6 +92,7 @@ export default function CreateSpacePage() {
 
     if (insertError || !insertedSpaces) {
       setError(insertError?.message || "Error inserting space");
+      setLoading(false);
       return;
     }
 
@@ -100,6 +112,7 @@ export default function CreateSpacePage() {
     }
 
     setSuccess("Space created successfully!");
+    setLoading(false);
     setTimeout(() => router.push("/dashboard"), 1500);
   };
 
@@ -159,7 +172,7 @@ export default function CreateSpacePage() {
             />
           </Form.Group>
 
-          <Form.Group className="mb-4">
+          <Form.Group className="mb-3">
             <Form.Label>Optional Cohost Email</Form.Label>
             <Form.Control
               type="email"
@@ -170,8 +183,35 @@ export default function CreateSpacePage() {
             />
           </Form.Group>
 
-          <Button variant="warning" type="submit" className="w-100">
-            Create Space
+          <Form.Group className="mb-4">
+            <Form.Label>Privacy Setting</Form.Label>
+            <div className="mt-2">
+              <Form.Check
+                type="radio"
+                id="public"
+                name="privacy"
+                label="🌐 Public - Anyone can view this space"
+                checked={isPublic}
+                onChange={() => setIsPublic(true)}
+                className="text-white mb-2"
+              />
+              <Form.Check
+                type="radio"
+                id="private"
+                name="privacy"
+                label="🔒 Private - Only you and co-hosts can view"
+                checked={!isPublic}
+                onChange={() => setIsPublic(false)}
+                className="text-white"
+              />
+            </div>
+            <Form.Text className="text-muted">
+              {isPublic ? "Public spaces appear in the Featured Albums section" : "Private spaces are only visible to you and co-hosts"}
+            </Form.Text>
+          </Form.Group>
+
+          <Button variant="warning" type="submit" className="w-100" disabled={loading}>
+            {loading ? "Creating Space..." : "Create Space"}
           </Button>
         </Form>
       </Container>

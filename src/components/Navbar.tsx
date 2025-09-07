@@ -87,10 +87,33 @@ export default function SiteNavbar() {
 
   const handleLogout = async () => {
     try {
-      await supabase.auth.signOut();
+      setIsLoading(true);
+      console.log('Attempting to sign out...');
+      
+      const { error } = await supabase.auth.signOut();
+      
+      if (error) {
+        console.error('Logout error:', error);
+        throw error;
+      }
+      
+      console.log('Sign out successful');
+      
+      // Clear local state immediately
+      setUser(null);
+      setRole(null);
+      
+      // Navigate to home
       router.push("/");
+      
     } catch (error) {
       console.error('Logout failed:', error);
+      // Even if there's an error, try to clear local state and navigate
+      setUser(null);
+      setRole(null);
+      router.push("/");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -113,7 +136,7 @@ export default function SiteNavbar() {
     >
       <Container>
         <Navbar.Brand as={Link} href="/" className="fw-bold fs-4">
-          📸 ShareSpace
+          📸 Spaces
         </Navbar.Brand>
         
         <Navbar.Toggle aria-controls="main-navbar" />
@@ -216,8 +239,9 @@ export default function SiteNavbar() {
                 <NavDropdown.Item 
                   onClick={handleLogout}
                   className="text-danger"
+                  disabled={isLoading}
                 >
-                  🚪 Sign Out
+                  {isLoading ? '⏳ Signing Out...' : '🚪 Sign Out'}
                 </NavDropdown.Item>
               </NavDropdown>
             ) : (

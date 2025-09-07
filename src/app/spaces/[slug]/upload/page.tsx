@@ -59,10 +59,10 @@ export default function UploadPage() {
     checkSpace();
   }, [slug, router]);
 
-  const showMessage = (text: string, type: 'success' | 'error') => {
+  const showMessage = useCallback((text: string, type: 'success' | 'error') => {
     setMessage({text, type});
     setTimeout(() => setMessage(null), 5000);
-  };
+  }, []);
 
   const processFiles = useCallback((fileList: FileList | File[]) => {
     const validFiles: UploadFile[] = [];
@@ -88,8 +88,10 @@ export default function UploadPage() {
       });
     });
     
-    setFiles(prev => [...prev, ...validFiles]);
-  }, []);
+    if (validFiles.length > 0) {
+      setFiles(prev => [...prev, ...validFiles]);
+    }
+  }, [showMessage]);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -117,18 +119,53 @@ export default function UploadPage() {
   const removeFile = (index: number) => {
     setFiles(prev => {
       const newFiles = [...prev];
-      URL.revokeObjectURL(newFiles[index].preview);
+      if (newFiles[index]?.preview) {
+        URL.revokeObjectURL(newFiles[index].preview);
+      }
       newFiles.splice(index, 1);
       return newFiles;
     });
   };
+
+  // Cleanup URLs on unmount
+  useEffect(() => {
+    return () => {
+      files.forEach(file => {
+        if (file.preview) {
+          URL.revokeObjectURL(file.preview);
+        }
+      });
+    };
+  }, [files]);
 
   const handleUpload = async () => {
     if (!user || files.length === 0 || isUploading) return;
     
     setIsUploading(true);
     let successCount = 0;
+    const pendingFiles = files.filter(f => f.status === 'pending');
     
+    // Get space ID once
+    let spaceId: string;
+    try {
+      const { data: spaceData, error: spaceError } = await supabase
+        .from('spaces')
+        .select('id')
+        .eq('slug', String(slug))
+        .single();
+        
+      if (spaceError || !spaceData?.id) {
+        throw new Error('Space not found');
+      }
+      spaceId = spaceData.id;
+    } catch (error) {
+      console.error('Space lookup error:', error);
+      showMessage('Could not find the space. Please try again.', 'error');
+      setIsUploading(false);
+      return;
+    }
+    
+    // Process files one by one
     for (let i = 0; i < files.length; i++) {
       const uploadFile = files[i];
       if (uploadFile.status !== 'pending') continue;
@@ -137,7 +174,7 @@ export default function UploadPage() {
         // Update status to uploading
         setFiles(prev => {
           const updated = [...prev];
-          updated[i] = { ...updated[i], status: 'uploading', progress: 0 };
+          updated[i] = { ...updated[i], status: 'uploading', progress: 10 };
           return updated;
         });
         
@@ -145,6 +182,13 @@ export default function UploadPage() {
         const fileExt = uploadFile.file.name.split('.').pop();
         const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
         const filePath = `spaces/${slug}/${fileName}`;
+        
+        // Update progress
+        setFiles(prev => {
+          const updated = [...prev];
+          updated[i] = { ...updated[i], progress: 30 };
+          return updated;
+        });
         
         // Upload to Supabase storage
         const { error: uploadError } = await supabase.storage
@@ -154,12 +198,15 @@ export default function UploadPage() {
             upsert: false
           });
           
-        if (uploadError) throw uploadError;
+        if (uploadError) {
+          console.error('Storage upload error:', uploadError);
+          throw new Error(`Upload failed: ${uploadError.message}`);
+        }
         
         // Update progress
         setFiles(prev => {
           const updated = [...prev];
-          updated[i] = { ...updated[i], progress: 90 };
+          updated[i] = { ...updated[i], progress: 70 };
           return updated;
         });
         
@@ -168,18 +215,28 @@ export default function UploadPage() {
           .from('photos')
           .getPublicUrl(filePath);
         
+        // Update progress
+        setFiles(prev => {
+          const updated = [...prev];
+          updated[i] = { ...updated[i], progress: 90 };
+          return updated;
+        });
+
         // Save photo record to database
         const { error: dbError } = await supabase
           .from('photos')
           .insert({
-            space_id: (await supabase.from('spaces').select('id').eq('slug', String(slug)).single()).data?.id,
+            space_id: spaceId,
             url: publicUrl,
             filename: uploadFile.file.name,
             uploader_id: user.id,
             is_approved: false
           });
           
-        if (dbError) throw dbError;
+        if (dbError) {
+          console.error('Database insert error:', dbError);
+          throw new Error(`Database error: ${dbError.message}`);
+        }
         
         // Mark as success
         setFiles(prev => {
@@ -190,14 +247,20 @@ export default function UploadPage() {
         
         successCount++;
         
+        // Small delay between uploads to prevent overwhelming
+        if (i < pendingFiles.length - 1) {
+          await new Promise(resolve => setTimeout(resolve, 100));
+        }
+        
       } catch (error: unknown) {
         console.error('Upload error:', error);
+        const errorMessage = error instanceof Error ? error.message : 'Upload failed';
         setFiles(prev => {
           const updated = [...prev];
           updated[i] = { 
             ...updated[i], 
             status: 'error', 
-            error: error instanceof Error ? error.message : 'Upload failed' 
+            error: errorMessage
           };
           return updated;
         });
@@ -208,9 +271,12 @@ export default function UploadPage() {
     
     if (successCount > 0) {
       showMessage(`Successfully uploaded ${successCount} photo(s)! They will appear after moderation.`, 'success');
+      // Clean up successful uploads after a delay
       setTimeout(() => {
-        setFiles([]);
-      }, 2000);
+        setFiles(prev => prev.filter(f => f.status !== 'success'));
+      }, 3000);
+    } else if (pendingFiles.length > 0) {
+      showMessage('All uploads failed. Please check your internet connection and try again.', 'error');
     }
   };
 

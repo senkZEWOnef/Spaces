@@ -1,6 +1,6 @@
 {
-  "name": "ShareSpace - Wedding Photo Sharing",
-  "short_name": "ShareSpace",
+  "name": "Spaces - Wedding Photo Sharing",
+  "short_name": "Spaces",
   "description": "Create beautiful collaborative photo albums for weddings and special events",
   "start_url": "/",
   "display": "standalone",
@@ -44,14 +44,14 @@
       "sizes": "1280x720",
       "type": "image/png",
       "form_factor": "wide",
-      "label": "ShareSpace desktop view"
+      "label": "Spaces desktop view"
     },
     {
       "src": "/screenshot-narrow.png", 
       "sizes": "640x1136",
       "type": "image/png",
       "form_factor": "narrow",
-      "label": "ShareSpace mobile view"
+      "label": "Spaces mobile view"
     }
   ]
 }

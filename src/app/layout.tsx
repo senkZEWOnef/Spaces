@@ -21,12 +21,12 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ShareSpace - Wedding Photo Sharing Made Beautiful",
+  title: "Spaces - Wedding Photo Sharing Made Beautiful",
   description: "Create beautiful collaborative photo albums for weddings and special events. Let your guests contribute memories that last forever.",
   keywords: "wedding photos, photo sharing, collaborative album, event photography, memory sharing",
-  authors: [{ name: "ShareSpace" }],
-  creator: "ShareSpace",
-  publisher: "ShareSpace",
+  authors: [{ name: "Spaces" }],
+  creator: "Spaces",
+  publisher: "Spaces",
   formatDetection: {
     email: false,
     address: false,

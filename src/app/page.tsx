@@ -6,46 +6,114 @@ import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import type { Database } from "@/types/supabase";
 import { useErrorHandler } from "@/hooks/useErrorHandler";
+import { sampleAlbums } from "@/data/sampleAlbums";
 
 type Space = Database["public"]["Tables"]["spaces"]["Row"];
+type FeaturedItem = Space | typeof sampleAlbums[0];
 
 export default function HomePage() {
-  const [featured, setFeatured] = useState<Space[]>([]);
+  const [featured, setFeatured] = useState<FeaturedItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<{ id: string } | null>(null);
+  const [userLoading, setUserLoading] = useState(true);
   const [stats, setStats] = useState({ totalSpaces: 0, totalPhotos: 0, totalUsers: 0 });
   const { handleError } = useErrorHandler();
 
+  // Check authentication status
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        setUser(user);
+      } catch (error) {
+        console.error('Auth check failed:', error);
+      } finally {
+        setUserLoading(false);
+      }
+    };
+    checkAuth();
+  }, []);
+
   useEffect(() => {
     const fetchData = async () => {
+      if (userLoading) return; // Wait for auth check
+      
       setLoading(true);
       
       try {
-        // Fetch featured public spaces
-        const { data: spacesData, error: spacesError } = await supabase
-          .from("spaces")
-          .select("*")
-          .eq("is_public", true)
-          .order("created_at", { ascending: false })
-          .limit(6);
+        // Show demo albums for logged-out users, real spaces for logged-in users
+        if (!user) {
+          console.log('User not logged in, showing demo albums');
+          const shuffled = [...sampleAlbums].sort(() => 0.5 - Math.random());
+          setFeatured(shuffled.slice(0, 5));
+        } else {
+          // Fetch featured public spaces for logged-in users
+          try {
+            const { data: spacesData, error: spacesError } = await supabase
+              .from("spaces")
+              .select("*")
+              .eq("is_public", true)
+              .order("created_at", { ascending: false })
+              .limit(6);
 
-        if (spacesError) throw spacesError;
-        
-        // Shuffle and pick up to 5
-        const shuffled = [...(spacesData || [])].sort(() => 0.5 - Math.random());
-        setFeatured(shuffled.slice(0, 5));
+            console.log('Spaces data for logged-in user:', { spacesData, spacesError, count: spacesData?.length });
 
-        // Fetch stats for hero section
-        const [spacesCount, photosCount, usersCount] = await Promise.all([
-          supabase.from("spaces").select("id", { count: "exact", head: true }),
-          supabase.from("photos").select("id", { count: "exact", head: true }),
-          supabase.from("users").select("id", { count: "exact", head: true })
-        ]);
+            if (spacesError) {
+              console.warn('Failed to load spaces:', spacesError);
+              console.log('Setting sample albums due to error');
+              // Show sample albums when there's an error
+              const shuffled = [...sampleAlbums].sort(() => 0.5 - Math.random());
+              setFeatured(shuffled.slice(0, 5));
+            } else {
+              if (spacesData && spacesData.length > 0) {
+                console.log('Setting real spaces for logged-in user:', spacesData.length);
+                // Shuffle and pick up to 5 real spaces
+                const shuffled = [...spacesData].sort(() => 0.5 - Math.random());
+                setFeatured(shuffled.slice(0, 5));
+              } else {
+                console.log('No real spaces found for logged-in user, setting sample albums');
+                // Show sample albums when no real spaces exist
+                const shuffled = [...sampleAlbums].sort(() => 0.5 - Math.random());
+                setFeatured(shuffled.slice(0, 5));
+              }
+            }
+          } catch (spacesLoadError) {
+            console.warn('Spaces query failed:', spacesLoadError);
+            console.log('Setting sample albums due to catch error');
+            // Show sample albums when spaces query fails
+            const shuffled = [...sampleAlbums].sort(() => 0.5 - Math.random());
+            setFeatured(shuffled.slice(0, 5));
+          }
+        }
 
-        setStats({
-          totalSpaces: spacesCount.count || 0,
-          totalPhotos: photosCount.count || 0,
-          totalUsers: usersCount.count || 0
-        });
+        // Fetch stats for hero section with error handling
+        try {
+          const statsPromises = [
+            supabase.from("spaces").select("id", { count: "exact", head: true }),
+            supabase.from("photos").select("id", { count: "exact", head: true }),
+            supabase.from("users").select("id", { count: "exact", head: true })
+          ];
+
+          const results = await Promise.allSettled(statsPromises);
+          
+          const spacesCount = results[0].status === 'fulfilled' ? results[0].value.count : 0;
+          const photosCount = results[1].status === 'fulfilled' ? results[1].value.count : 0;
+          const usersCount = results[2].status === 'fulfilled' ? results[2].value.count : 0;
+
+          setStats({
+            totalSpaces: spacesCount || 0,
+            totalPhotos: photosCount || 0,
+            totalUsers: usersCount || 0
+          });
+        } catch (statsError) {
+          console.warn('Failed to load stats:', statsError);
+          // Set default stats if database queries fail
+          setStats({
+            totalSpaces: 0,
+            totalPhotos: 0,
+            totalUsers: 0
+          });
+        }
 
       } catch (error) {
         handleError(error, 'Failed to load homepage data');
@@ -55,7 +123,7 @@ export default function HomePage() {
     };
 
     fetchData();
-  }, [handleError]);
+  }, [handleError, user, userLoading]);
 
   return (
     <div className="bg-dark text-light">
@@ -194,7 +262,7 @@ export default function HomePage() {
                             <small className="text-success">✓ Public</small>
                           </div>
                           <Link
-                            href={`/spaces/${album.slug}`}
+                            href={('id' in album && album.id?.startsWith('sample-')) ? `/demo/${album.slug}` : `/spaces/${album.slug}`}
                             className="btn btn-gold w-100 btn-sm"
                           >
                             View Album
@@ -277,13 +345,213 @@ export default function HomePage() {
         </Container>
       </section>
 
+      {/* Pricing Plans Section */}
+      <section className="py-5" style={{ backgroundColor: "#2d3748" }}>
+        <Container>
+          <div className="text-center mb-5">
+            <h2 className="display-5 fw-bold text-light mb-3" style={{ fontFamily: "Georgia, serif" }}>
+              Choose Your Perfect Plan
+            </h2>
+            <p className="lead text-light opacity-75 mb-4">
+              Start free and upgrade as your events grow
+            </p>
+          </div>
+
+          <Row className="justify-content-center g-4">
+            {/* Free Plan */}
+            <Col lg={4} md={6}>
+              <Card className="border-0 shadow-lg h-100 position-relative" style={{ backgroundColor: "#1a202c" }}>
+                <Card.Body className="p-4 text-center text-light">
+                  <div className="mb-3">
+                    <h4 className="fw-bold text-light">Starter</h4>
+                    <div className="mb-2">
+                      <span className="display-4 fw-bold">Free</span>
+                    </div>
+                    <p className="text-muted mb-0">Perfect for small gatherings</p>
+                  </div>
+
+                  <hr className="border-secondary my-4" />
+
+                  <ul className="list-unstyled text-start mb-4">
+                    <li className="mb-2">
+                      <i className="bi bi-check-circle-fill text-success me-2"></i>
+                      Up to 5 guests can upload
+                    </li>
+                    <li className="mb-2">
+                      <i className="bi bi-check-circle-fill text-success me-2"></i>
+                      20 photos per guest max
+                    </li>
+                    <li className="mb-2">
+                      <i className="bi bi-check-circle-fill text-success me-2"></i>
+                      Basic photo gallery
+                    </li>
+                    <li className="mb-2">
+                      <i className="bi bi-check-circle-fill text-success me-2"></i>
+                      Public/private spaces
+                    </li>
+                    <li className="mb-2 text-muted">
+                      <i className="bi bi-x-circle me-2"></i>
+                      No co-hosts
+                    </li>
+                    <li className="mb-2 text-muted">
+                      <i className="bi bi-x-circle me-2"></i>
+                      Community support only
+                    </li>
+                  </ul>
+
+                  <Link href="/create-space">
+                    <Button 
+                      variant="outline-light" 
+                      className="w-100"
+                      size="lg"
+                    >
+                      Get Started Free
+                    </Button>
+                  </Link>
+                </Card.Body>
+              </Card>
+            </Col>
+
+            {/* Pro Plan */}
+            <Col lg={4} md={6}>
+              <Card className="border-0 shadow-lg h-100 position-relative bg-primary">
+                <div className="position-absolute top-0 start-50 translate-middle">
+                  <span className="badge bg-warning text-dark px-3 py-2 rounded-pill fw-bold">
+                    Most Popular
+                  </span>
+                </div>
+                <Card.Body className="p-4 text-center text-light mt-3">
+                  <div className="mb-3">
+                    <h4 className="fw-bold">Pro</h4>
+                    <div className="mb-2">
+                      <span className="display-4 fw-bold">$10</span>
+                      <span className="fs-6 opacity-75">/month</span>
+                    </div>
+                    <p className="opacity-75 mb-0">Great for medium events</p>
+                    <div className="badge bg-success mb-2">Free Trial: 1 Event</div>
+                  </div>
+
+                  <hr className="border-light border-opacity-25 my-4" />
+
+                  <ul className="list-unstyled text-start mb-4">
+                    <li className="mb-2">
+                      <i className="bi bi-check-circle-fill text-warning me-2"></i>
+                      Unlimited guests
+                    </li>
+                    <li className="mb-2">
+                      <i className="bi bi-check-circle-fill text-warning me-2"></i>
+                      Unlimited photos per guest
+                    </li>
+                    <li className="mb-2">
+                      <i className="bi bi-check-circle-fill text-warning me-2"></i>
+                      1 co-host allowed
+                    </li>
+                    <li className="mb-2">
+                      <i className="bi bi-check-circle-fill text-warning me-2"></i>
+                      Advanced photo moderation
+                    </li>
+                    <li className="mb-2">
+                      <i className="bi bi-check-circle-fill text-warning me-2"></i>
+                      Download all photos
+                    </li>
+                    <li className="mb-2">
+                      <i className="bi bi-check-circle-fill text-warning me-2"></i>
+                      Email support
+                    </li>
+                  </ul>
+
+                  <Link href="/create-space">
+                    <Button 
+                      variant="light" 
+                      className="w-100 fw-bold"
+                      size="lg"
+                    >
+                      Start Free Trial
+                    </Button>
+                  </Link>
+                </Card.Body>
+              </Card>
+            </Col>
+
+            {/* Premium Plan */}
+            <Col lg={4} md={6}>
+              <Card className="border-0 shadow-lg h-100" style={{ backgroundColor: "#1a202c", border: "2px solid #9a8c58" }}>
+                <Card.Body className="p-4 text-center text-light">
+                  <div className="mb-3">
+                    <h4 className="fw-bold" style={{ color: "#9a8c58" }}>Premium</h4>
+                    <div className="mb-2">
+                      <span className="display-4 fw-bold">$20</span>
+                      <span className="fs-6 opacity-75">/month</span>
+                    </div>
+                    <p className="text-muted mb-0">Perfect for large events</p>
+                  </div>
+
+                  <hr className="border-secondary my-4" />
+
+                  <ul className="list-unstyled text-start mb-4">
+                    <li className="mb-2">
+                      <i className="bi bi-check-circle-fill me-2" style={{ color: "#9a8c58" }}></i>
+                      Everything in Pro
+                    </li>
+                    <li className="mb-2">
+                      <i className="bi bi-check-circle-fill me-2" style={{ color: "#9a8c58" }}></i>
+                      Unlimited co-hosts
+                    </li>
+                    <li className="mb-2">
+                      <i className="bi bi-check-circle-fill me-2" style={{ color: "#9a8c58" }}></i>
+                      Priority photo processing
+                    </li>
+                    <li className="mb-2">
+                      <i className="bi bi-check-circle-fill me-2" style={{ color: "#9a8c58" }}></i>
+                      Custom branding options
+                    </li>
+                    <li className="mb-2">
+                      <i className="bi bi-check-circle-fill me-2" style={{ color: "#9a8c58" }}></i>
+                      Advanced analytics
+                    </li>
+                    <li className="mb-2">
+                      <i className="bi bi-check-circle-fill me-2" style={{ color: "#9a8c58" }}></i>
+                      24/7 priority support
+                    </li>
+                  </ul>
+
+                  <Link href="/create-space">
+                    <Button 
+                      className="w-100 fw-bold"
+                      size="lg"
+                      style={{ 
+                        backgroundColor: "#9a8c58", 
+                        border: "none",
+                        color: "white"
+                      }}
+                    >
+                      Go Premium
+                    </Button>
+                  </Link>
+                </Card.Body>
+              </Card>
+            </Col>
+          </Row>
+
+          {/* FAQ or Additional Info */}
+          <div className="text-center mt-5">
+            <p className="text-light opacity-75">
+              🔒 All plans include secure photo storage and privacy controls
+            </p>
+            <p className="text-muted small">
+              Cancel anytime • No setup fees • 30-day money back guarantee
+            </p>
+          </div>
+        </Container>
+      </section>
+
       {/* Modern CTA Section with Dark Theme */}
       <section className="py-5" style={{ backgroundColor: "#0d1117" }}>
         <Container>
           <Row className="align-items-center">
             <Col lg={8} className="text-center text-lg-start">
               <h2 className="display-6 fw-bold mb-3 text-light">Ready to Create Something Beautiful?</h2>
-              <p className="lead mb-0 text-muted">Join couples worldwide who trust ShareSpace with their precious memories.</p>
+              <p className="lead mb-0 text-muted">Join couples worldwide who trust Spaces with their precious memories.</p>
             </Col>
             <Col lg={4} className="text-center text-lg-end mt-4 mt-lg-0">
               <div className="d-flex flex-column flex-sm-row gap-3 justify-content-lg-end justify-content-center">

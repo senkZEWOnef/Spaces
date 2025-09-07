@@ -61,7 +61,7 @@ export default function SignUpPage() {
             {/* Header */}
             <div className="text-center mb-4">
               <h2 className="fw-bold text-light mb-2">Create Account</h2>
-              <p className="text-muted">Join ShareSpace and start sharing memories</p>
+              <p className="text-muted">Join Spaces and start sharing memories</p>
             </div>
 
             {/* Error/Success Alert */}

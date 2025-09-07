@@ -86,7 +86,7 @@ export default function Footer() {
           </Col>
           <Col md={4} className="text-md-end mt-4 mt-md-0">
             <p className="text-muted small">
-              &copy; {new Date().getFullYear()} Spaces. All rights reserved.
+              &copy; {new Date().getFullYear()} Spaces byZewo. All rights reserved.
             </p>
           </Col>
         </Row>
