@@ -16,6 +16,8 @@ function slugify(text: string): string {
 
 export default function CreateSpacePage() {
   const [name, setName] = useState("");
+  const [partner1Name, setPartner1Name] = useState("");
+  const [partner2Name, setPartner2Name] = useState("");
   const [date, setDate] = useState("");
   const [description, setDescription] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -39,7 +41,7 @@ export default function CreateSpacePage() {
     } = await supabase.auth.getUser();
 
     if (userError || !user) {
-      setError("You must be logged in to create a space.");
+      setError("You must be logged in to create a wedding gallery.");
       setLoading(false);
       return;
     }
@@ -111,7 +113,7 @@ export default function CreateSpacePage() {
       }
     }
 
-    setSuccess("Space created successfully!");
+    setSuccess("Wedding gallery created successfully!");
     setLoading(false);
     setTimeout(() => router.push("/dashboard"), 1500);
   };
@@ -119,25 +121,65 @@ export default function CreateSpacePage() {
   return (
     <section className="bg-dark text-white min-vh-100 d-flex align-items-center">
       <Container style={{ maxWidth: "600px" }}>
-        <h2 className="text-center mb-4">Create a New Space</h2>
+        <h2 className="text-center mb-4">💒 Create Your Wedding Gallery</h2>
         {error && <Alert variant="danger">{error}</Alert>}
         {success && <Alert variant="success">{success}</Alert>}
 
         <Form onSubmit={handleSubmit}>
+          <div className="row mb-3">
+            <div className="col-md-6">
+              <Form.Group>
+                <Form.Label>Partner 1 Name</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="Sarah"
+                  value={partner1Name}
+                  onChange={(e) => {
+                    setPartner1Name(e.target.value);
+                    if (partner2Name) {
+                      setName(`${e.target.value} & ${partner2Name}'s Wedding`);
+                    }
+                  }}
+                  className="bg-light text-dark"
+                />
+              </Form.Group>
+            </div>
+            <div className="col-md-6">
+              <Form.Group>
+                <Form.Label>Partner 2 Name</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="Michael"
+                  value={partner2Name}
+                  onChange={(e) => {
+                    setPartner2Name(e.target.value);
+                    if (partner1Name) {
+                      setName(`${partner1Name} & ${e.target.value}'s Wedding`);
+                    }
+                  }}
+                  className="bg-light text-dark"
+                />
+              </Form.Group>
+            </div>
+          </div>
+          
           <Form.Group className="mb-3">
-            <Form.Label>Event Name</Form.Label>
+            <Form.Label>Wedding Title</Form.Label>
             <Form.Control
               type="text"
-              placeholder="Wedding in San Juan"
+              placeholder="Sarah & Michael's Wedding"
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
               className="bg-light text-dark"
             />
+            <Form.Text className="text-muted">
+              This will be auto-generated from the names above, but you can customize it
+            </Form.Text>
           </Form.Group>
 
           <Form.Group className="mb-3">
-            <Form.Label>Event Date</Form.Label>
+            <Form.Label>Wedding Date</Form.Label>
             <Form.Control
               type="date"
               value={date}
@@ -152,7 +194,7 @@ export default function CreateSpacePage() {
             <Form.Control
               as="textarea"
               rows={3}
-              placeholder="Tell guests what to expect..."
+              placeholder="Share the story of your special day with your wedding guests..."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               className="bg-light text-dark"
@@ -160,7 +202,7 @@ export default function CreateSpacePage() {
           </Form.Group>
 
           <Form.Group className="mb-3">
-            <Form.Label>Upload Image (optional)</Form.Label>
+            <Form.Label>Wedding Photo (optional)</Form.Label>
             <Form.Control
               type="file"
               accept="image/*"
@@ -173,10 +215,10 @@ export default function CreateSpacePage() {
           </Form.Group>
 
           <Form.Group className="mb-3">
-            <Form.Label>Optional Cohost Email</Form.Label>
+            <Form.Label>Wedding Party Co-Host Email (optional)</Form.Label>
             <Form.Control
               type="email"
-              placeholder="someone@example.com"
+              placeholder="maid-of-honor@example.com"
               value={cohostEmail}
               onChange={(e) => setCohostEmail(e.target.value)}
               className="bg-light text-dark"
@@ -190,7 +232,7 @@ export default function CreateSpacePage() {
                 type="radio"
                 id="public"
                 name="privacy"
-                label="🌐 Public - Anyone can view this space"
+                label="💕 Public - Share your wedding with the world"
                 checked={isPublic}
                 onChange={() => setIsPublic(true)}
                 className="text-white mb-2"
@@ -199,19 +241,19 @@ export default function CreateSpacePage() {
                 type="radio"
                 id="private"
                 name="privacy"
-                label="🔒 Private - Only you and co-hosts can view"
+                label="🔒 Private - Only you and wedding party can view"
                 checked={!isPublic}
                 onChange={() => setIsPublic(false)}
                 className="text-white"
               />
             </div>
             <Form.Text className="text-muted">
-              {isPublic ? "Public spaces appear in the Featured Albums section" : "Private spaces are only visible to you and co-hosts"}
+              {isPublic ? "Public weddings appear in the Featured Wedding Galleries section" : "Private weddings are only visible to you and your wedding party"}
             </Form.Text>
           </Form.Group>
 
           <Button variant="warning" type="submit" className="w-100" disabled={loading}>
-            {loading ? "Creating Space..." : "Create Space"}
+            {loading ? "Creating Wedding Gallery..." : "💒 Create Wedding Gallery"}
           </Button>
         </Form>
       </Container>

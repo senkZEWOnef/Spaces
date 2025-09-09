@@ -19,6 +19,27 @@ export default function HomePage() {
   const [stats, setStats] = useState({ totalSpaces: 0, totalPhotos: 0, totalUsers: 0 });
   const { handleError } = useErrorHandler();
 
+  // Wedding background images for slideshow
+  const heroImages = [
+    'https://images.unsplash.com/photo-1519225421980-715cb0215aed?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80',
+    'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2069&q=80',
+    'https://images.unsplash.com/photo-1465495976277-4387d4b0e4a6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2074&q=80',
+    'https://images.unsplash.com/photo-1583939003579-730e3918a45a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2086&q=80',
+    'https://images.unsplash.com/photo-1520854221256-17451cc331bf?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80'
+  ];
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  // Slideshow effect for hero background
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prevIndex) => 
+        (prevIndex + 1) % heroImages.length
+      );
+    }, 5000); // Change image every 5 seconds
+
+    return () => clearInterval(interval);
+  }, [heroImages.length]);
+
   // Check authentication status
   useEffect(() => {
     const checkAuth = async () => {
@@ -126,15 +147,16 @@ export default function HomePage() {
   }, [handleError, user, userLoading]);
 
   return (
-    <div className="bg-dark text-light">
-      {/* Hero Section - Your Original Style Enhanced */}
+    <div style={{ background: 'linear-gradient(135deg, #fdf2f8 0%, #fefce8 100%)', minHeight: '100vh' }}>
+      {/* Hero Section - Wedding Slideshow */}
       <section
         className="d-flex justify-content-center align-items-center text-center text-white py-5 position-relative"
         style={{
-          backgroundImage: "url('/hero.jpg')",
+          backgroundImage: `url('${heroImages[currentImageIndex]}')`,
           backgroundSize: "cover",
           backgroundPosition: "center",
           height: "60vh",
+          transition: "background-image 1s ease-in-out",
         }}
       >
         {/* Dark overlay for better text readability */}
@@ -146,43 +168,45 @@ export default function HomePage() {
         <div
           className="position-relative"
           style={{
-            backgroundColor: "rgba(0, 0, 0, 0.6)",
+            backgroundColor: "rgba(255, 255, 255, 0.95)",
             padding: "2rem",
             borderRadius: "15px",
             width: "90%",
             maxWidth: "600px",
             backdropFilter: "blur(10px)",
+            boxShadow: "0 8px 32px rgba(219, 112, 147, 0.3)",
+            border: "2px solid rgba(219, 112, 147, 0.2)",
           }}
         >
           <h2
             className="display-5 fw-bold mb-3"
-            style={{ fontFamily: "Georgia, serif" }}
+            style={{ fontFamily: "Georgia, serif", color: "#be185d" }}
           >
-            Your memories, shared beautifully
+            Your wedding memories, shared beautifully
           </h2>
-          <p className="lead mb-4">
-            Effortless photo sharing for weddings and events
+          <p className="lead mb-4" style={{ color: "#881337" }}>
+            Let your guests capture and share every magical moment of your special day
           </p>
           
           {/* Modern stats integration */}
           {!loading && stats.totalSpaces > 0 && (
             <div className="row g-3 mb-4">
               <div className="col-4">
-                <div className="bg-light bg-opacity-10 rounded-3 p-2">
-                  <div className="fw-bold">{stats.totalSpaces}+</div>
-                  <small>Events</small>
+                <div className="rounded-3 p-2" style={{ backgroundColor: "rgba(219, 112, 147, 0.3)" }}>
+                  <div className="fw-bold" style={{ color: "#be185d" }}>{stats.totalSpaces}+</div>
+                  <small style={{ color: "#be185d" }}>Weddings</small>
                 </div>
               </div>
               <div className="col-4">
-                <div className="bg-light bg-opacity-10 rounded-3 p-2">
-                  <div className="fw-bold">{stats.totalPhotos}+</div>
-                  <small>Photos</small>
+                <div className="rounded-3 p-2" style={{ backgroundColor: "rgba(255, 215, 0, 0.3)" }}>
+                  <div className="fw-bold" style={{ color: "#a16207" }}>{stats.totalPhotos}+</div>
+                  <small style={{ color: "#a16207" }}>Photos</small>
                 </div>
               </div>
               <div className="col-4">
-                <div className="bg-light bg-opacity-10 rounded-3 p-2">
-                  <div className="fw-bold">{stats.totalUsers}+</div>
-                  <small>Users</small>
+                <div className="rounded-3 p-2" style={{ backgroundColor: "rgba(219, 112, 147, 0.3)" }}>
+                  <div className="fw-bold" style={{ color: "#be185d" }}>{stats.totalUsers}+</div>
+                  <small style={{ color: "#be185d" }}>Couples</small>
                 </div>
               </div>
             </div>
@@ -192,35 +216,56 @@ export default function HomePage() {
             <Button
               size="lg"
               style={{
-                backgroundColor: "#9a8c58",
+                background: "linear-gradient(45deg, #ec4899, #f59e0b)",
                 border: "none",
                 padding: "12px 30px",
                 fontWeight: "bold",
                 borderRadius: "8px",
-                boxShadow: "0 4px 15px rgba(154, 140, 88, 0.3)",
+                boxShadow: "0 4px 15px rgba(236, 72, 153, 0.4)",
                 transition: "all 0.3s ease",
+                color: "white",
               }}
               className="hover-lift"
             >
-              Create Space
+              Create Wedding Gallery
             </Button>
           </Link>
         </div>
+
+        {/* Slideshow indicators */}
+        <div className="position-absolute bottom-0 start-50 translate-middle-x mb-4">
+          <div className="d-flex gap-2">
+            {heroImages.map((_, index) => (
+              <button
+                key={index}
+                className={`rounded-circle border-0 ${index === currentImageIndex ? 'bg-white' : 'bg-white bg-opacity-50'}`}
+                style={{
+                  width: '12px',
+                  height: '12px',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease'
+                }}
+                onClick={() => setCurrentImageIndex(index)}
+                aria-label={`Go to slide ${index + 1}`}
+              />
+            ))}
+          </div>
+        </div>
       </section>
 
-      {/* Featured Albums - Your Original Dark Style */}
-      <section className="py-5" style={{ backgroundColor: "#121212" }}>
+      {/* Featured Albums - Wedding Style */}
+      <section className="py-5" style={{ backgroundColor: "white" }}>
         <Container>
           <h2
             className="text-center mb-4"
-            style={{ fontFamily: "Georgia, serif", color: "#f8f9fa" }}
+            style={{ fontFamily: "Georgia, serif", color: "#be185d" }}
           >
-            Featured Albums
+            Featured Wedding Galleries
           </h2>
 
           {loading ? (
             <div className="text-center">
-              <div className="spinner-border text-light" role="status">
+              <div className="spinner-border" role="status" style={{ color: "#ec4899" }}>
                 <span className="visually-hidden">Loading...</span>
               </div>
             </div>
@@ -230,7 +275,7 @@ export default function HomePage() {
                 <Row className="g-4 justify-content-center">
                   {featured.map((album) => (
                     <Col xs={12} sm={6} md={4} lg={3} xl={2} key={album.id}>
-                      <Card className="border-0 shadow-lg h-100 bg-dark text-light hover-lift">
+                      <Card className="border-0 shadow-lg h-100 hover-lift" style={{ backgroundColor: "white", border: "1px solid #f3f4f6" }}>
                         <div className="position-relative overflow-hidden">
                           <Card.Img
                             variant="top"
@@ -251,21 +296,31 @@ export default function HomePage() {
                           />
                         </div>
                         <Card.Body className="p-3">
-                          <Card.Title className="h6 mb-2">{album.name}</Card.Title>
-                          <Card.Text className="small text-light opacity-75 mb-3">
-                            {album.description || "A few highlights from this event."}
+                          <Card.Title className="h6 mb-2" style={{ color: "#111827" }}>{album.name}</Card.Title>
+                          <Card.Text className="small mb-3" style={{ color: "#6b7280" }}>
+                            {album.description || "Beautiful moments from their special day."}
                           </Card.Text>
                           <div className="d-flex justify-content-between align-items-center mb-3">
-                            <small className="text-muted">
-                              📅 {new Date(album.date || album.created_at || Date.now()).toLocaleDateString()}
+                            <small style={{ color: "#f59e0b" }}>
+                              💒 {new Date(album.date || album.created_at || Date.now()).toLocaleDateString()}
                             </small>
-                            <small className="text-success">✓ Public</small>
+                            <small style={{ color: "#ec4899" }}>💕 Shared</small>
                           </div>
                           <Link
                             href={('id' in album && album.id?.startsWith('sample-')) ? `/demo/${album.slug}` : `/spaces/${album.slug}`}
-                            className="btn btn-gold w-100 btn-sm"
+                            className="w-100 btn-sm"
+                            style={{ 
+                              background: "linear-gradient(45deg, #ec4899, #f59e0b)",
+                              border: "none",
+                              color: "white",
+                              borderRadius: "6px",
+                              padding: "8px 16px",
+                              textDecoration: "none",
+                              display: "inline-block",
+                              textAlign: "center"
+                            }}
                           >
-                            View Album
+                            View Wedding
                           </Link>
                         </Card.Body>
                       </Card>
@@ -274,12 +329,19 @@ export default function HomePage() {
                 </Row>
               ) : (
                 <div className="text-center py-5">
-                  <div className="display-1 mb-3" style={{ opacity: 0.3 }}>📸</div>
-                  <h4 className="mb-3 text-light">No Featured Albums Yet</h4>
-                  <p className="text-muted mb-4">Be the first to create a beautiful photo space!</p>
+                  <div className="display-1 mb-3" style={{ opacity: 0.3 }}>💒</div>
+                  <h4 className="mb-3" style={{ color: "#be185d" }}>No Wedding Galleries Yet</h4>
+                  <p className="mb-4" style={{ color: "#6b7280" }}>Be the first to create a beautiful wedding photo gallery!</p>
                   <Link href="/create-space">
-                    <Button variant="outline-light" size="lg">
-                      Create First Space
+                    <Button 
+                      size="lg"
+                      style={{ 
+                        background: "linear-gradient(45deg, #ec4899, #f59e0b)",
+                        border: "none",
+                        color: "white"
+                      }}
+                    >
+                      Create First Wedding
                     </Button>
                   </Link>
                 </div>
@@ -289,54 +351,81 @@ export default function HomePage() {
         </Container>
       </section>
 
-      {/* Quick Actions - Your Original Dark Style Enhanced */}
-      <section className="py-5" style={{ backgroundColor: "#1e1e1e" }}>
+      {/* Quick Actions - Wedding Style */}
+      <section className="py-5" style={{ backgroundColor: "#f9fafb" }}>
         <Container>
           <h2
             className="text-center mb-5"
-            style={{ fontFamily: "Georgia, serif", color: "#f8f9fa" }}
+            style={{ fontFamily: "Georgia, serif", color: "#be185d" }}
           >
             Quick Actions
           </h2>
           <Row className="g-4 text-center">
             <Col md={4}>
-              <Card className="p-4 border-0 shadow-lg h-100 bg-dark text-light hover-lift">
+              <Card className="p-4 border-0 shadow-lg h-100 hover-lift" style={{ backgroundColor: "white" }}>
                 <Card.Body>
                   <div className="mb-3">
-                    <i className="bi bi-plus-circle display-4 text-warning"></i>
+                    <i className="bi bi-heart-fill display-4" style={{ color: "#ec4899" }}></i>
                   </div>
-                  <h5 className="fw-bold mb-3">Create Your Event Space</h5>
-                  <p className="mb-4">Start collecting photos from your guests in minutes.</p>
+                  <h5 className="fw-bold mb-3" style={{ color: "#be185d" }}>Create Your Wedding Gallery</h5>
+                  <p className="mb-4" style={{ color: "#6b7280" }}>Let your wedding guests share photos from your special day.</p>
                   <Link href="/create-space">
-                    <Button className="btn-gold w-100">Create Space</Button>
+                    <Button 
+                      className="w-100"
+                      style={{ 
+                        background: "linear-gradient(45deg, #ec4899, #f59e0b)",
+                        border: "none",
+                        color: "white"
+                      }}
+                    >
+                      Start Your Wedding
+                    </Button>
                   </Link>
                 </Card.Body>
               </Card>
             </Col>
             <Col md={4}>
-              <Card className="p-4 border-0 shadow-lg h-100 bg-dark text-light hover-lift">
+              <Card className="p-4 border-0 shadow-lg h-100 hover-lift" style={{ backgroundColor: "white" }}>
                 <Card.Body>
                   <div className="mb-3">
-                    <i className="bi bi-globe display-4 text-primary"></i>
+                    <i className="bi bi-images display-4" style={{ color: "#f59e0b" }}></i>
                   </div>
-                  <h5 className="fw-bold mb-3">Explore Public Albums</h5>
-                  <p className="mb-4">View beautiful albums shared by others in the community.</p>
+                  <h5 className="fw-bold mb-3" style={{ color: "#be185d" }}>Browse Wedding Inspiration</h5>
+                  <p className="mb-4" style={{ color: "#6b7280" }}>Get inspired by beautiful wedding galleries from other couples.</p>
                   <Link href="/public-spaces">
-                    <Button className="btn-gold w-100">Browse Albums</Button>
+                    <Button 
+                      className="w-100"
+                      style={{ 
+                        background: "linear-gradient(45deg, #ec4899, #f59e0b)",
+                        border: "none",
+                        color: "white"
+                      }}
+                    >
+                      View Weddings
+                    </Button>
                   </Link>
                 </Card.Body>
               </Card>
             </Col>
             <Col md={4}>
-              <Card className="p-4 border-0 shadow-lg h-100 bg-dark text-light hover-lift">
+              <Card className="p-4 border-0 shadow-lg h-100 hover-lift" style={{ backgroundColor: "white" }}>
                 <Card.Body>
                   <div className="mb-3">
-                    <i className="bi bi-heart display-4 text-danger"></i>
+                    <i className="bi bi-gift display-4" style={{ color: "#ec4899" }}></i>
                   </div>
-                  <h5 className="fw-bold mb-3">Share the Love</h5>
-                  <p className="mb-4">Know someone getting married? Let them know about us.</p>
+                  <h5 className="fw-bold mb-3" style={{ color: "#be185d" }}>Perfect Wedding Gift</h5>
+                  <p className="mb-4" style={{ color: "#6b7280" }}>Know a couple getting married? Give them the gift of memories.</p>
                   <Link href="/signup">
-                    <Button className="btn-gold w-100">Get Started</Button>
+                    <Button 
+                      className="w-100"
+                      style={{ 
+                        background: "linear-gradient(45deg, #ec4899, #f59e0b)",
+                        border: "none",
+                        color: "white"
+                      }}
+                    >
+                      Gift a Wedding
+                    </Button>
                   </Link>
                 </Card.Body>
               </Card>
@@ -346,66 +435,70 @@ export default function HomePage() {
       </section>
 
       {/* Pricing Plans Section */}
-      <section className="py-5" style={{ backgroundColor: "#2d3748" }}>
+      <section className="py-5" style={{ backgroundColor: "white" }}>
         <Container>
           <div className="text-center mb-5">
-            <h2 className="display-5 fw-bold text-light mb-3" style={{ fontFamily: "Georgia, serif" }}>
-              Choose Your Perfect Plan
+            <h2 className="display-5 fw-bold mb-3" style={{ fontFamily: "Georgia, serif", color: "#be185d" }}>
+              Choose Your Lifetime Wedding Package
             </h2>
-            <p className="lead text-light opacity-75 mb-4">
-              Start free and upgrade as your events grow
+            <p className="lead mb-4" style={{ color: "#6b7280" }}>
+              One-time payment, lifetime access - no recurring fees ever
             </p>
           </div>
 
           <Row className="justify-content-center g-4">
             {/* Free Plan */}
             <Col lg={4} md={6}>
-              <Card className="border-0 shadow-lg h-100 position-relative" style={{ backgroundColor: "#1a202c" }}>
-                <Card.Body className="p-4 text-center text-light">
+              <Card className="border-0 shadow-lg h-100 position-relative" style={{ backgroundColor: "#f0fdf4", border: "2px solid #22c55e" }}>
+                <Card.Body className="p-4 text-center">
                   <div className="mb-3">
-                    <h4 className="fw-bold text-light">Starter</h4>
+                    <h4 className="fw-bold" style={{ color: "#15803d" }}>Intimate Ceremony</h4>
                     <div className="mb-2">
-                      <span className="display-4 fw-bold">Free</span>
+                      <span className="display-4 fw-bold" style={{ color: "#16a34a" }}>Free</span>
                     </div>
-                    <p className="text-muted mb-0">Perfect for small gatherings</p>
+                    <p className="mb-0" style={{ color: "#166534" }}>Perfect for intimate weddings</p>
                   </div>
 
                   <hr className="border-secondary my-4" />
 
                   <ul className="list-unstyled text-start mb-4">
-                    <li className="mb-2">
-                      <i className="bi bi-check-circle-fill text-success me-2"></i>
-                      Up to 5 guests can upload
+                    <li className="mb-2" style={{ color: "#166534" }}>
+                      <i className="bi bi-check-circle-fill me-2" style={{ color: "#16a34a" }}></i>
+                      Up to 5 wedding guests can upload
                     </li>
-                    <li className="mb-2">
-                      <i className="bi bi-check-circle-fill text-success me-2"></i>
+                    <li className="mb-2" style={{ color: "#166534" }}>
+                      <i className="bi bi-check-circle-fill me-2" style={{ color: "#16a34a" }}></i>
                       20 photos per guest max
                     </li>
-                    <li className="mb-2">
-                      <i className="bi bi-check-circle-fill text-success me-2"></i>
-                      Basic photo gallery
+                    <li className="mb-2" style={{ color: "#166534" }}>
+                      <i className="bi bi-check-circle-fill me-2" style={{ color: "#16a34a" }}></i>
+                      Beautiful wedding gallery
                     </li>
-                    <li className="mb-2">
-                      <i className="bi bi-check-circle-fill text-success me-2"></i>
-                      Public/private spaces
+                    <li className="mb-2" style={{ color: "#166534" }}>
+                      <i className="bi bi-check-circle-fill me-2" style={{ color: "#16a34a" }}></i>
+                      Public/private wedding albums
                     </li>
-                    <li className="mb-2 text-muted">
-                      <i className="bi bi-x-circle me-2"></i>
-                      No co-hosts
+                    <li className="mb-2" style={{ color: "#6b7280" }}>
+                      <i className="bi bi-x-circle me-2" style={{ color: "#9ca3af" }}></i>
+                      No wedding party co-hosts
                     </li>
-                    <li className="mb-2 text-muted">
-                      <i className="bi bi-x-circle me-2"></i>
+                    <li className="mb-2" style={{ color: "#6b7280" }}>
+                      <i className="bi bi-x-circle me-2" style={{ color: "#9ca3af" }}></i>
                       Community support only
                     </li>
                   </ul>
 
                   <Link href="/create-space">
                     <Button 
-                      variant="outline-light" 
                       className="w-100"
                       size="lg"
+                      style={{
+                        backgroundColor: "#16a34a",
+                        border: "none",
+                        color: "white"
+                      }}
                     >
-                      Get Started Free
+                      Start Wedding Planning
                     </Button>
                   </Link>
                 </Card.Body>
@@ -422,13 +515,13 @@ export default function HomePage() {
                 </div>
                 <Card.Body className="p-4 text-center text-light mt-3">
                   <div className="mb-3">
-                    <h4 className="fw-bold">Pro</h4>
+                    <h4 className="fw-bold">Pro Wedding</h4>
                     <div className="mb-2">
-                      <span className="display-4 fw-bold">$10</span>
-                      <span className="fs-6 opacity-75">/month</span>
+                      <span className="display-4 fw-bold">$100</span>
+                      <span className="fs-6 opacity-75">one-time</span>
                     </div>
-                    <p className="opacity-75 mb-0">Great for medium events</p>
-                    <div className="badge bg-success mb-2">Free Trial: 1 Event</div>
+                    <p className="opacity-75 mb-0">Lifetime access for all your events</p>
+                    <div className="badge bg-success mb-2">Up to 50 Events</div>
                   </div>
 
                   <hr className="border-light border-opacity-25 my-4" />
@@ -436,7 +529,11 @@ export default function HomePage() {
                   <ul className="list-unstyled text-start mb-4">
                     <li className="mb-2">
                       <i className="bi bi-check-circle-fill text-warning me-2"></i>
-                      Unlimited guests
+                      Up to 50 lifetime events
+                    </li>
+                    <li className="mb-2">
+                      <i className="bi bi-check-circle-fill text-warning me-2"></i>
+                      Unlimited wedding guests per event
                     </li>
                     <li className="mb-2">
                       <i className="bi bi-check-circle-fill text-warning me-2"></i>
@@ -444,7 +541,7 @@ export default function HomePage() {
                     </li>
                     <li className="mb-2">
                       <i className="bi bi-check-circle-fill text-warning me-2"></i>
-                      1 co-host allowed
+                      Multiple wedding party co-hosts
                     </li>
                     <li className="mb-2">
                       <i className="bi bi-check-circle-fill text-warning me-2"></i>
@@ -452,21 +549,27 @@ export default function HomePage() {
                     </li>
                     <li className="mb-2">
                       <i className="bi bi-check-circle-fill text-warning me-2"></i>
-                      Download all photos
+                      Download all photos & bulk export
                     </li>
                     <li className="mb-2">
                       <i className="bi bi-check-circle-fill text-warning me-2"></i>
-                      Email support
+                      Priority email support
                     </li>
                   </ul>
 
+                  <div className="mb-3">
+                    <small className="text-muted">
+                      <i className="bi bi-info-circle me-1"></i>
+                      At 50 events, delete one to add another
+                    </small>
+                  </div>
                   <Link href="/create-space">
                     <Button 
                       variant="light" 
                       className="w-100 fw-bold"
                       size="lg"
                     >
-                      Start Free Trial
+                      Get Pro Lifetime Access
                     </Button>
                   </Link>
                 </Card.Body>
@@ -478,12 +581,12 @@ export default function HomePage() {
               <Card className="border-0 shadow-lg h-100" style={{ backgroundColor: "#1a202c", border: "2px solid #9a8c58" }}>
                 <Card.Body className="p-4 text-center text-light">
                   <div className="mb-3">
-                    <h4 className="fw-bold" style={{ color: "#9a8c58" }}>Premium</h4>
+                    <h4 className="fw-bold" style={{ color: "#9a8c58" }}>Premium Unlimited</h4>
                     <div className="mb-2">
-                      <span className="display-4 fw-bold">$20</span>
-                      <span className="fs-6 opacity-75">/month</span>
+                      <span className="display-4 fw-bold">$500</span>
+                      <span className="fs-6 opacity-75">one-time</span>
                     </div>
-                    <p className="text-muted mb-0">Perfect for large events</p>
+                    <p className="text-muted mb-0">Unlimited everything, forever</p>
                   </div>
 
                   <hr className="border-secondary my-4" />
@@ -491,27 +594,31 @@ export default function HomePage() {
                   <ul className="list-unstyled text-start mb-4">
                     <li className="mb-2">
                       <i className="bi bi-check-circle-fill me-2" style={{ color: "#9a8c58" }}></i>
-                      Everything in Pro
+                      Unlimited lifetime events
                     </li>
                     <li className="mb-2">
                       <i className="bi bi-check-circle-fill me-2" style={{ color: "#9a8c58" }}></i>
-                      Unlimited co-hosts
+                      Unlimited wedding guests & photos
                     </li>
                     <li className="mb-2">
                       <i className="bi bi-check-circle-fill me-2" style={{ color: "#9a8c58" }}></i>
-                      Priority photo processing
+                      Unlimited wedding party co-hosts
                     </li>
                     <li className="mb-2">
                       <i className="bi bi-check-circle-fill me-2" style={{ color: "#9a8c58" }}></i>
-                      Custom branding options
+                      Priority photo processing & storage
                     </li>
                     <li className="mb-2">
                       <i className="bi bi-check-circle-fill me-2" style={{ color: "#9a8c58" }}></i>
-                      Advanced analytics
+                      Custom branding & white-label options
                     </li>
                     <li className="mb-2">
                       <i className="bi bi-check-circle-fill me-2" style={{ color: "#9a8c58" }}></i>
-                      24/7 priority support
+                      Advanced analytics & insights
+                    </li>
+                    <li className="mb-2">
+                      <i className="bi bi-check-circle-fill me-2" style={{ color: "#9a8c58" }}></i>
+                      24/7 priority support & phone support
                     </li>
                   </ul>
 
@@ -525,7 +632,7 @@ export default function HomePage() {
                         color: "white"
                       }}
                     >
-                      Go Premium
+                      Get Premium Unlimited
                     </Button>
                   </Link>
                 </Card.Body>
@@ -536,39 +643,47 @@ export default function HomePage() {
           {/* FAQ or Additional Info */}
           <div className="text-center mt-5">
             <p className="text-light opacity-75">
-              🔒 All plans include secure photo storage and privacy controls
+              💒 All wedding packages include secure photo storage and privacy controls
             </p>
             <p className="text-muted small">
-              Cancel anytime • No setup fees • 30-day money back guarantee
+              One-time payment • No recurring fees • 30-day money back guarantee • Lifetime access
             </p>
           </div>
         </Container>
       </section>
 
-      {/* Modern CTA Section with Dark Theme */}
-      <section className="py-5" style={{ backgroundColor: "#0d1117" }}>
+      {/* Modern CTA Section with Wedding Theme */}
+      <section className="py-5" style={{ backgroundColor: "#fdf2f8" }}>
         <Container>
           <Row className="align-items-center">
             <Col lg={8} className="text-center text-lg-start">
-              <h2 className="display-6 fw-bold mb-3 text-light">Ready to Create Something Beautiful?</h2>
-              <p className="lead mb-0 text-muted">Join couples worldwide who trust Spaces with their precious memories.</p>
+              <h2 className="display-6 fw-bold mb-3" style={{ color: "#be185d" }}>Ready to Capture Your Wedding Magic?</h2>
+              <p className="lead mb-0" style={{ color: "#6b7280" }}>Join thousands of couples who've trusted us with their most precious wedding memories.</p>
             </Col>
             <Col lg={4} className="text-center text-lg-end mt-4 mt-lg-0">
               <div className="d-flex flex-column flex-sm-row gap-3 justify-content-lg-end justify-content-center">
                 <Link href="/create-space">
                   <Button 
-                    className="btn-gold"
                     size="lg"
+                    style={{ 
+                      background: "linear-gradient(45deg, #db7093, #ffd700)",
+                      border: "none",
+                      color: "white"
+                    }}
                   >
-                    🚀 Start Free
+                    💒 Start Wedding
                   </Button>
                 </Link>
                 <Link href="/public-spaces">
                   <Button 
-                    variant="outline-light" 
                     size="lg"
+                    style={{
+                      border: "2px solid #ec4899",
+                      backgroundColor: "transparent",
+                      color: "#be185d"
+                    }}
                   >
-                    👀 View Examples
+                    💕 Wedding Inspiration
                   </Button>
                 </Link>
               </div>

@@ -33,12 +33,12 @@ export const sampleAlbums: SampleAlbum[] = [
     is_public: true
   },
   {
-    id: 'sample-graduation',
-    name: 'Class of 2024 Graduation',
-    slug: 'class-2024-graduation',
-    description: 'We did it! Four years of hard work finally paid off. Here are some memories from our graduation day.',
+    id: 'sample-garden-wedding',
+    name: 'Maria & David\'s Garden Wedding',
+    slug: 'maria-david-garden-wedding',
+    description: 'A romantic garden ceremony surrounded by blooming flowers and loved ones. Every moment was pure magic!',
     date: '2024-05-20',
-    image_url: 'https://images.unsplash.com/photo-1523050854058-8df90110c9d1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
+    image_url: 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
     photos: [
       'https://images.unsplash.com/photo-1523050854058-8df90110c9d1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80',
       'https://images.unsplash.com/photo-1607013251379-e6eecfffe234?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80',
@@ -51,12 +51,12 @@ export const sampleAlbums: SampleAlbum[] = [
     is_public: true
   },
   {
-    id: 'sample-concert',
-    name: 'Summer Music Festival 2024',
-    slug: 'summer-music-festival-2024',
-    description: 'What an incredible weekend! The best artists, amazing vibes, and unforgettable moments with friends.',
+    id: 'sample-beach-wedding',
+    name: 'Alex & Rachel\'s Beach Wedding',
+    slug: 'alex-rachel-beach-wedding',
+    description: 'Saying "I do" with sand between our toes and ocean waves as our soundtrack. Pure bliss!',
     date: '2024-07-12',
-    image_url: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
+    image_url: 'https://images.unsplash.com/photo-1465495976277-4387d4b0e4a6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
     photos: [
       'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80',
       'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80',
@@ -70,12 +70,12 @@ export const sampleAlbums: SampleAlbum[] = [
     is_public: true
   },
   {
-    id: 'sample-house-party',
-    name: 'Sarah\'s Birthday Bash',
-    slug: 'sarah-birthday-bash',
-    description: 'The most epic house party of the year! Thanks everyone for making Sarah\'s 25th birthday unforgettable.',
+    id: 'sample-rustic-wedding',
+    name: 'Sarah & Tom\'s Rustic Barn Wedding',
+    slug: 'sarah-tom-rustic-barn-wedding',
+    description: 'Country charm meets modern elegance in this beautiful barn celebration. Dancing until dawn under the stars!',
     date: '2024-08-03',
-    image_url: 'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
+    image_url: 'https://images.unsplash.com/photo-1520854221256-17451cc331bf?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
     photos: [
       'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80',
       'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80',
@@ -88,12 +88,12 @@ export const sampleAlbums: SampleAlbum[] = [
     is_public: true
   },
   {
-    id: 'sample-beach',
-    name: 'Friends Beach Weekend',
-    slug: 'friends-beach-weekend',
-    description: 'Sun, sand, and great friends - what more could you ask for? Our annual beach trip was absolutely perfect this year!',
+    id: 'sample-vintage-wedding',
+    name: 'Lisa & Michael\'s Vintage Wedding',
+    slug: 'lisa-michael-vintage-wedding',
+    description: 'A timeless celebration with vintage details, classic cars, and all the elegance of a bygone era. Simply perfect!',
     date: '2024-06-28',
-    image_url: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
+    image_url: 'https://images.unsplash.com/photo-1583939003579-730e3918a45a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
     photos: [
       'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80',
       'https://images.unsplash.com/photo-1544551763-46a013bb70d5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80',

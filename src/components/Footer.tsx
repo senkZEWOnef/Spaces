@@ -7,30 +7,36 @@ import Link from "next/link";
 export default function Footer() {
   return (
     <footer
-      className="bg-dark text-white py-5"
-      style={{ position: "relative", zIndex: 1 }}
+      className="py-5"
+      style={{ 
+        position: "relative", 
+        zIndex: 1,
+        background: "linear-gradient(135deg, #fdf2f8 0%, #fefce8 100%)",
+        borderTop: "1px solid rgba(236, 72, 153, 0.2)"
+      }}
     >
       <Container>
         <Row>
           <Col md={4}>
-            <h5 className="mb-3" style={{ fontFamily: "Georgia, serif" }}>
+            <h5 className="mb-3" style={{ fontFamily: "Georgia, serif", color: "#be185d" }}>
               Help & Info
             </h5>
             <ul className="list-unstyled">
               <li>
-                <Link href="/faq" className="text-white text-decoration-none">
+                <Link href="/faq" className="text-decoration-none" style={{ color: "#6b7280" }}>
                   Frequently Asked Questions
                 </Link>
               </li>
               <li>
-                <Link href="/help" className="text-white text-decoration-none">
+                <Link href="/help" className="text-decoration-none" style={{ color: "#6b7280" }}>
                   Help Center
                 </Link>
               </li>
               <li>
                 <Link
                   href="/contact"
-                  className="text-white text-decoration-none"
+                  className="text-decoration-none"
+                  style={{ color: "#6b7280" }}
                 >
                   Contact Us
                 </Link>
@@ -38,7 +44,7 @@ export default function Footer() {
             </ul>
           </Col>
           <Col md={4}>
-            <h5 className="mb-3" style={{ fontFamily: "Georgia, serif" }}>
+            <h5 className="mb-3" style={{ fontFamily: "Georgia, serif", color: "#be185d" }}>
               Social Media
             </h5>
             <ul className="list-unstyled">
@@ -47,7 +53,8 @@ export default function Footer() {
                   href="https://instagram.com"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-white text-decoration-none"
+                  className="text-decoration-none"
+                  style={{ color: "#6b7280" }}
                 >
                   Instagram
                 </a>
@@ -57,7 +64,8 @@ export default function Footer() {
                   href="https://threads.net"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-white text-decoration-none"
+                  className="text-decoration-none"
+                  style={{ color: "#6b7280" }}
                 >
                   Threads
                 </a>
@@ -67,7 +75,8 @@ export default function Footer() {
                   href="https://x.com"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-white text-decoration-none"
+                  className="text-decoration-none"
+                  style={{ color: "#6b7280" }}
                 >
                   Twitter (X)
                 </a>
@@ -77,7 +86,8 @@ export default function Footer() {
                   href="https://facebook.com"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-white text-decoration-none"
+                  className="text-decoration-none"
+                  style={{ color: "#6b7280" }}
                 >
                   Facebook
                 </a>
@@ -85,7 +95,7 @@ export default function Footer() {
             </ul>
           </Col>
           <Col md={4} className="text-md-end mt-4 mt-md-0">
-            <p className="text-muted small">
+            <p className="small" style={{ color: "#6b7280" }}>
               &copy; {new Date().getFullYear()} Spaces byZewo. All rights reserved.
             </p>
           </Col>

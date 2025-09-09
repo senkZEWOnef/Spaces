@@ -130,13 +130,18 @@ export default function SiteNavbar() {
 
   return (
     <Navbar 
-      className={`shadow-sm ${isDarkMode ? 'navbar-dark bg-dark' : 'navbar-light bg-white'}`} 
+      className="shadow-sm"
+      style={{
+        backgroundColor: 'white',
+        borderBottom: '1px solid rgba(236, 72, 153, 0.2)',
+        boxShadow: '0 2px 4px rgba(236, 72, 153, 0.1)'
+      }} 
       expand="lg" 
       fixed="top"
     >
       <Container>
-        <Navbar.Brand as={Link} href="/" className="fw-bold fs-4">
-          📸 Spaces
+        <Navbar.Brand as={Link} href="/" className="fw-bold fs-4" style={{ color: '#be185d' }}>
+          💒 Spaces
         </Navbar.Brand>
         
         <Navbar.Toggle aria-controls="main-navbar" />
@@ -145,16 +150,16 @@ export default function SiteNavbar() {
           <Nav className="ms-auto align-items-center gap-2">
             
             {/* Public Navigation */}
-            <Nav.Link as={Link} href="/public-spaces" className="fw-semibold px-3">
-              🌐 Explore
+            <Nav.Link as={Link} href="/public-spaces" className="fw-semibold px-3" style={{ color: '#be185d' }}>
+              💕 Wedding Gallery
             </Nav.Link>
             
             {user && (
               <>
-                <Nav.Link as={Link} href="/create-space" className="fw-semibold px-3">
-                  ➕ Create
+                <Nav.Link as={Link} href="/create-space" className="fw-semibold px-3" style={{ color: '#be185d' }}>
+                  💍 Create Wedding
                 </Nav.Link>
-                <Nav.Link as={Link} href="/dashboard" className="fw-semibold px-3">
+                <Nav.Link as={Link} href="/dashboard" className="fw-semibold px-3" style={{ color: '#be185d' }}>
                   📊 Dashboard
                 </Nav.Link>
               </>
@@ -250,18 +255,26 @@ export default function SiteNavbar() {
                   <>
                     <Link href="/login">
                       <Button 
-                        variant="outline-primary" 
                         size="sm"
                         className="px-3"
+                        style={{
+                          border: '2px solid #ec4899',
+                          backgroundColor: 'transparent',
+                          color: '#be185d'
+                        }}
                       >
                         Sign In
                       </Button>
                     </Link>
                     <Link href="/signup">
                       <Button 
-                        variant="primary" 
                         size="sm"
                         className="px-3"
+                        style={{
+                          background: 'linear-gradient(45deg, #ec4899, #f59e0b)',
+                          border: 'none',
+                          color: 'white'
+                        }}
                       >
                         Sign Up
                       </Button>
