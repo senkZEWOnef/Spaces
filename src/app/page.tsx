@@ -658,7 +658,7 @@ export default function HomePage() {
           <Row className="align-items-center">
             <Col lg={8} className="text-center text-lg-start">
               <h2 className="display-6 fw-bold mb-3" style={{ color: "#be185d" }}>Ready to Capture Your Wedding Magic?</h2>
-              <p className="lead mb-0" style={{ color: "#6b7280" }}>Join thousands of couples who've trusted us with their most precious wedding memories.</p>
+              <p className="lead mb-0" style={{ color: "#6b7280" }}>Join thousands of couples who&apos;ve trusted us with their most precious wedding memories.</p>
             </Col>
             <Col lg={4} className="text-center text-lg-end mt-4 mt-lg-0">
               <div className="d-flex flex-column flex-sm-row gap-3 justify-content-lg-end justify-content-center">
