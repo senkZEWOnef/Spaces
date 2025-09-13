@@ -107,13 +107,32 @@ export default function SiteNavbar() {
 
   return (
     <Navbar 
-      className={`shadow-sm ${isDarkMode ? 'navbar-dark bg-dark' : 'navbar-light bg-white'}`} 
+      className="shadow-lg" 
       expand="lg" 
       fixed="top"
+      style={{
+        background: isDarkMode 
+          ? 'linear-gradient(135deg, #1f2937 0%, #374151 100%)' 
+          : 'rgba(255, 255, 255, 0.95)',
+        backdropFilter: 'blur(10px)',
+        borderBottom: isDarkMode 
+          ? '1px solid rgba(236, 72, 153, 0.2)' 
+          : '1px solid rgba(236, 72, 153, 0.1)',
+        transition: 'all 0.3s ease'
+      }}
     >
       <Container>
-        <Navbar.Brand as={Link} href="/" className="fw-bold fs-4">
-          📸 ShareSpace
+        <Navbar.Brand as={Link} href="/" style={{
+          fontSize: '1.5rem',
+          fontWeight: '700',
+          background: 'linear-gradient(135deg, #ec4899, #8b5cf6)',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          backgroundClip: 'text',
+          textDecoration: 'none',
+          transition: 'all 0.3s ease'
+        }}>
+          ✨ ShareSpace
         </Navbar.Brand>
         
         <Navbar.Toggle aria-controls="main-navbar" />
@@ -122,16 +141,82 @@ export default function SiteNavbar() {
           <Nav className="ms-auto align-items-center gap-2">
             
             {/* Public Navigation */}
-            <Nav.Link as={Link} href="/public-spaces" className="fw-semibold px-3">
-              🌐 Explore
+            <Nav.Link 
+              as={Link} 
+              href="/public-spaces" 
+              style={{
+                fontWeight: '600',
+                padding: '0.5rem 1rem',
+                margin: '0 0.25rem',
+                borderRadius: '8px',
+                color: isDarkMode ? '#e5e7eb' : '#374151',
+                transition: 'all 0.3s ease',
+                textDecoration: 'none'
+              }}
+              onMouseEnter={(e: React.MouseEvent<HTMLElement>) => {
+                e.currentTarget.style.background = 'linear-gradient(135deg, #ec4899, #8b5cf6)';
+                e.currentTarget.style.color = 'white';
+                e.currentTarget.style.transform = 'translateY(-2px)';
+              }}
+              onMouseLeave={(e: React.MouseEvent<HTMLElement>) => {
+                e.currentTarget.style.background = 'transparent';
+                e.currentTarget.style.color = isDarkMode ? '#e5e7eb' : '#374151';
+                e.currentTarget.style.transform = 'translateY(0)';
+              }}
+            >
+              💕 Explore Galleries
             </Nav.Link>
             
             {user && (
               <>
-                <Nav.Link as={Link} href="/create-space" className="fw-semibold px-3">
-                  ➕ Create
+                <Nav.Link 
+                  as={Link} 
+                  href="/create-space" 
+                  style={{
+                    fontWeight: '600',
+                    padding: '0.5rem 1rem',
+                    margin: '0 0.25rem',
+                    borderRadius: '8px',
+                    color: isDarkMode ? '#e5e7eb' : '#374151',
+                    transition: 'all 0.3s ease',
+                    textDecoration: 'none'
+                  }}
+                  onMouseEnter={(e: React.MouseEvent<HTMLElement>) => {
+                    e.currentTarget.style.background = 'linear-gradient(135deg, #f59e0b, #eab308)';
+                    e.currentTarget.style.color = 'white';
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                  }}
+                  onMouseLeave={(e: React.MouseEvent<HTMLElement>) => {
+                    e.currentTarget.style.background = 'transparent';
+                    e.currentTarget.style.color = isDarkMode ? '#e5e7eb' : '#374151';
+                    e.currentTarget.style.transform = 'translateY(0)';
+                  }}
+                >
+                  ✨ Create Gallery
                 </Nav.Link>
-                <Nav.Link as={Link} href="/dashboard" className="fw-semibold px-3">
+                <Nav.Link 
+                  as={Link} 
+                  href="/dashboard" 
+                  style={{
+                    fontWeight: '600',
+                    padding: '0.5rem 1rem',
+                    margin: '0 0.25rem',
+                    borderRadius: '8px',
+                    color: isDarkMode ? '#e5e7eb' : '#374151',
+                    transition: 'all 0.3s ease',
+                    textDecoration: 'none'
+                  }}
+                  onMouseEnter={(e: React.MouseEvent<HTMLElement>) => {
+                    e.currentTarget.style.background = 'linear-gradient(135deg, #8b5cf6, #7c3aed)';
+                    e.currentTarget.style.color = 'white';
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                  }}
+                  onMouseLeave={(e: React.MouseEvent<HTMLElement>) => {
+                    e.currentTarget.style.background = 'transparent';
+                    e.currentTarget.style.color = isDarkMode ? '#e5e7eb' : '#374151';
+                    e.currentTarget.style.transform = 'translateY(0)';
+                  }}
+                >
                   📊 Dashboard
                 </Nav.Link>
               </>
@@ -221,30 +306,66 @@ export default function SiteNavbar() {
                 </NavDropdown.Item>
               </NavDropdown>
             ) : (
-              <div className="d-flex gap-2 ms-2">
+              <div className="d-flex gap-3 ms-2">
                 {!isLoading ? (
                   <>
                     <Link href="/login">
-                      <Button 
-                        variant="outline-primary" 
-                        size="sm"
-                        className="px-3"
+                      <button
+                        style={{
+                          background: 'transparent',
+                          border: '2px solid #ec4899',
+                          borderRadius: '12px',
+                          padding: '0.5rem 1.5rem',
+                          fontSize: '0.9rem',
+                          fontWeight: '600',
+                          color: '#ec4899',
+                          cursor: 'pointer',
+                          transition: 'all 0.3s ease',
+                          textDecoration: 'none'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = '#ec4899';
+                          e.currentTarget.style.color = 'white';
+                          e.currentTarget.style.transform = 'translateY(-2px)';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = 'transparent';
+                          e.currentTarget.style.color = '#ec4899';
+                          e.currentTarget.style.transform = 'translateY(0)';
+                        }}
                       >
                         Sign In
-                      </Button>
+                      </button>
                     </Link>
                     <Link href="/signup">
-                      <Button 
-                        variant="primary" 
-                        size="sm"
-                        className="px-3"
+                      <button
+                        style={{
+                          background: 'linear-gradient(135deg, #ec4899, #8b5cf6)',
+                          border: 'none',
+                          borderRadius: '12px',
+                          padding: '0.5rem 1.5rem',
+                          fontSize: '0.9rem',
+                          fontWeight: '600',
+                          color: 'white',
+                          cursor: 'pointer',
+                          transition: 'all 0.3s ease',
+                          boxShadow: '0 4px 15px rgba(236, 72, 153, 0.3)'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.transform = 'translateY(-2px)';
+                          e.currentTarget.style.boxShadow = '0 6px 20px rgba(236, 72, 153, 0.4)';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.transform = 'translateY(0)';
+                          e.currentTarget.style.boxShadow = '0 4px 15px rgba(236, 72, 153, 0.3)';
+                        }}
                       >
-                        Sign Up
-                      </Button>
+                        ✨ Sign Up
+                      </button>
                     </Link>
                   </>
                 ) : (
-                  <div className="spinner-border spinner-border-sm text-primary" role="status">
+                  <div className="spinner-border spinner-border-sm" style={{ color: '#ec4899' }} role="status">
                     <span className="visually-hidden">Loading...</span>
                   </div>
                 )}

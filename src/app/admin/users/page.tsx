@@ -28,10 +28,10 @@ export default function ManageUsersPage() {
   };
 
   const handleRoleChange = async (userId: string, newRole: string) => {
-    const { error } = await supabase
+    const { error } = (await supabase
       .from("users")
-      .update({ role: newRole } as { role: string })
-      .eq("id", userId);
+      .update({ role: newRole })
+      .eq("id", userId)) as { error: null | { message: string } };
 
     if (error) {
       console.error("Role update failed:", error.message);

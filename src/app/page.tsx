@@ -369,7 +369,7 @@ export default function HomePage() {
       {/* How It Works Section */}
       <section style={{
         padding: '6rem 0',
-        background: 'white'
+        background: 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)'
       }}>
         <Container>
           <div className="text-center mb-5">
@@ -932,57 +932,279 @@ export default function HomePage() {
             fontWeight: '700',
             marginBottom: '1.5rem'
           }}>
-            Ready to Create Magic?
+            Choose Your Perfect Plan
           </h2>
           <p style={{
             fontSize: '1.25rem',
-            marginBottom: '3rem',
+            marginBottom: '4rem',
             opacity: 0.9,
-            maxWidth: '600px',
-            margin: '0 auto 3rem'
+            maxWidth: '700px',
+            margin: '0 auto 4rem'
           }}>
-            Join thousands of couples who&apos;ve trusted us with their most precious memories. Start your wedding gallery in under 2 minutes.
+            Select the plan that fits your wedding dreams. Start free and upgrade anytime to unlock more features.
           </p>
 
+          {/* Pricing Cards */}
           <div style={{
-            display: 'flex',
-            gap: '1rem',
-            justifyContent: 'center',
-            flexWrap: 'wrap'
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+            gap: '2rem',
+            maxWidth: '1000px',
+            margin: '0 auto'
           }}>
-            <Link href="/create-space">
-              <button style={{
-                background: 'white',
-                color: '#ec4899',
-                border: 'none',
-                borderRadius: '12px',
-                padding: '1.2rem 3rem',
-                fontSize: '1.2rem',
+            
+            {/* Free Trial */}
+            <div style={{
+              background: 'rgba(255, 255, 255, 0.1)',
+              backdropFilter: 'blur(10px)',
+              borderRadius: '20px',
+              padding: '2rem',
+              border: '1px solid rgba(255, 255, 255, 0.2)',
+              textAlign: 'center',
+              position: 'relative',
+              transition: 'all 0.3s ease'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-10px)';
+              e.currentTarget.style.boxShadow = '0 20px 40px rgba(255, 255, 255, 0.1)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = 'none';
+            }}>
+              <div style={{
+                fontSize: '3rem',
+                marginBottom: '1rem'
+              }}>🆓</div>
+              <h3 style={{
+                fontSize: '1.5rem',
                 fontWeight: '700',
-                cursor: 'pointer',
-                transition: 'all 0.3s ease',
-                boxShadow: '0 8px 25px rgba(255, 255, 255, 0.2)',
-                minWidth: '250px'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-3px)';
-                e.currentTarget.style.boxShadow = '0 12px 35px rgba(255, 255, 255, 0.3)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = '0 8px 25px rgba(255, 255, 255, 0.2)';
+                marginBottom: '1rem',
+                color: 'white'
+              }}>Free Trial</h3>
+              <div style={{
+                fontSize: '2.5rem',
+                fontWeight: '700',
+                marginBottom: '1.5rem',
+                color: 'white'
+              }}>$0</div>
+              <ul style={{
+                listStyle: 'none',
+                padding: 0,
+                marginBottom: '2rem',
+                color: 'rgba(255, 255, 255, 0.8)'
               }}>
-                ✨ Start Your Wedding Gallery
-              </button>
-            </Link>
+                <li style={{ marginBottom: '0.8rem' }}>✨ 1 Wedding Gallery</li>
+                <li style={{ marginBottom: '0.8rem' }}>📸 Up to 50 Photos</li>
+                <li style={{ marginBottom: '0.8rem' }}>💝 Basic Features</li>
+                <li style={{ marginBottom: '0.8rem' }}>❌ No Co-hosts</li>
+                <li style={{ marginBottom: '0.8rem' }}>⏰ 30-day Trial</li>
+              </ul>
+              <Link href="/signup">
+                <button style={{
+                  background: 'rgba(255, 255, 255, 0.2)',
+                  color: 'white',
+                  border: '1px solid rgba(255, 255, 255, 0.3)',
+                  borderRadius: '12px',
+                  padding: '1rem 2rem',
+                  fontSize: '1rem',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease',
+                  width: '100%'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.3)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)';
+                }}>
+                  Start Free Trial
+                </button>
+              </Link>
+            </div>
+
+            {/* Premium Plan */}
+            <div style={{
+              background: 'linear-gradient(135deg, rgba(236, 72, 153, 0.2), rgba(139, 92, 246, 0.2))',
+              backdropFilter: 'blur(10px)',
+              borderRadius: '20px',
+              padding: '2rem',
+              border: '2px solid rgba(236, 72, 153, 0.3)',
+              textAlign: 'center',
+              position: 'relative',
+              transition: 'all 0.3s ease',
+              transform: 'scale(1.05)'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'scale(1.05) translateY(-10px)';
+              e.currentTarget.style.boxShadow = '0 25px 50px rgba(236, 72, 153, 0.2)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'scale(1.05) translateY(0)';
+              e.currentTarget.style.boxShadow = 'none';
+            }}>
+              <div style={{
+                position: 'absolute',
+                top: '-10px',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                background: 'linear-gradient(135deg, #ec4899, #8b5cf6)',
+                color: 'white',
+                padding: '0.5rem 1.5rem',
+                borderRadius: '20px',
+                fontSize: '0.8rem',
+                fontWeight: '700'
+              }}>MOST POPULAR</div>
+              <div style={{
+                fontSize: '3rem',
+                marginBottom: '1rem'
+              }}>💖</div>
+              <h3 style={{
+                fontSize: '1.5rem',
+                fontWeight: '700',
+                marginBottom: '1rem',
+                color: 'white'
+              }}>Premium</h3>
+              <div style={{
+                fontSize: '2.5rem',
+                fontWeight: '700',
+                marginBottom: '0.5rem',
+                color: 'white'
+              }}>$100</div>
+              <div style={{
+                fontSize: '0.9rem',
+                marginBottom: '1.5rem',
+                color: 'rgba(255, 255, 255, 0.7)'
+              }}>One-time payment</div>
+              <ul style={{
+                listStyle: 'none',
+                padding: 0,
+                marginBottom: '2rem',
+                color: 'rgba(255, 255, 255, 0.9)'
+              }}>
+                <li style={{ marginBottom: '0.8rem' }}>✨ Up to 10 Wedding Events</li>
+                <li style={{ marginBottom: '0.8rem' }}>📸 Unlimited Photos per Event</li>
+                <li style={{ marginBottom: '0.8rem' }}>👥 1 Co-host Included</li>
+                <li style={{ marginBottom: '0.8rem' }}>🔒 Advanced Privacy Settings</li>
+                <li style={{ marginBottom: '0.8rem' }}>💝 Premium Templates</li>
+                <li style={{ marginBottom: '0.8rem', fontSize: '0.8rem', opacity: 0.8 }}>*Delete events to add new ones</li>
+              </ul>
+              <Link href="/signup?plan=premium">
+                <button style={{
+                  background: 'linear-gradient(135deg, #ec4899, #8b5cf6)',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '12px',
+                  padding: '1rem 2rem',
+                  fontSize: '1rem',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease',
+                  width: '100%',
+                  boxShadow: '0 4px 15px rgba(236, 72, 153, 0.3)'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                  e.currentTarget.style.boxShadow = '0 8px 25px rgba(236, 72, 153, 0.4)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = '0 4px 15px rgba(236, 72, 153, 0.3)';
+                }}>
+                  Get Premium
+                </button>
+              </Link>
+            </div>
+
+            {/* Ultimate Plan */}
+            <div style={{
+              background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(236, 72, 153, 0.2))',
+              backdropFilter: 'blur(10px)',
+              borderRadius: '20px',
+              padding: '2rem',
+              border: '1px solid rgba(245, 158, 11, 0.3)',
+              textAlign: 'center',
+              position: 'relative',
+              transition: 'all 0.3s ease'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-10px)';
+              e.currentTarget.style.boxShadow = '0 20px 40px rgba(245, 158, 11, 0.2)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = 'none';
+            }}>
+              <div style={{
+                fontSize: '3rem',
+                marginBottom: '1rem'
+              }}>👑</div>
+              <h3 style={{
+                fontSize: '1.5rem',
+                fontWeight: '700',
+                marginBottom: '1rem',
+                color: 'white'
+              }}>Ultimate</h3>
+              <div style={{
+                fontSize: '2.5rem',
+                fontWeight: '700',
+                marginBottom: '0.5rem',
+                color: 'white'
+              }}>$500</div>
+              <div style={{
+                fontSize: '0.9rem',
+                marginBottom: '1.5rem',
+                color: 'rgba(255, 255, 255, 0.7)'
+              }}>One-time payment</div>
+              <ul style={{
+                listStyle: 'none',
+                padding: 0,
+                marginBottom: '2rem',
+                color: 'rgba(255, 255, 255, 0.9)'
+              }}>
+                <li style={{ marginBottom: '0.8rem' }}>✨ Unlimited Wedding Events</li>
+                <li style={{ marginBottom: '0.8rem' }}>📸 Unlimited Everything</li>
+                <li style={{ marginBottom: '0.8rem' }}>👥 Unlimited Co-hosts</li>
+                <li style={{ marginBottom: '0.8rem' }}>🎨 Custom Branding</li>
+                <li style={{ marginBottom: '0.8rem' }}>📧 Priority Support</li>
+                <li style={{ marginBottom: '0.8rem' }}>💎 All Premium Features</li>
+              </ul>
+              <Link href="/signup?plan=ultimate">
+                <button style={{
+                  background: 'linear-gradient(135deg, #f59e0b, #ec4899)',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '12px',
+                  padding: '1rem 2rem',
+                  fontSize: '1rem',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease',
+                  width: '100%',
+                  boxShadow: '0 4px 15px rgba(245, 158, 11, 0.3)'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                  e.currentTarget.style.boxShadow = '0 8px 25px rgba(245, 158, 11, 0.4)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = '0 4px 15px rgba(245, 158, 11, 0.3)';
+                }}>
+                  Go Ultimate
+                </button>
+              </Link>
+            </div>
           </div>
 
           <p style={{
-            marginTop: '2rem',
+            marginTop: '3rem',
             opacity: 0.8,
-            fontSize: '0.9rem'
+            fontSize: '0.9rem',
+            textAlign: 'center'
           }}>
-            Free to start • No credit card required • Takes 2 minutes
+            All plans include secure hosting, mobile-friendly galleries, and 24/7 uptime ✨
           </p>
         </Container>
       </section>
