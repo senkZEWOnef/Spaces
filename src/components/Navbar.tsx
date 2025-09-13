@@ -87,33 +87,10 @@ export default function SiteNavbar() {
 
   const handleLogout = async () => {
     try {
-      setIsLoading(true);
-      console.log('Attempting to sign out...');
-      
-      const { error } = await supabase.auth.signOut();
-      
-      if (error) {
-        console.error('Logout error:', error);
-        throw error;
-      }
-      
-      console.log('Sign out successful');
-      
-      // Clear local state immediately
-      setUser(null);
-      setRole(null);
-      
-      // Navigate to home
+      await supabase.auth.signOut();
       router.push("/");
-      
     } catch (error) {
       console.error('Logout failed:', error);
-      // Even if there's an error, try to clear local state and navigate
-      setUser(null);
-      setRole(null);
-      router.push("/");
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -130,18 +107,13 @@ export default function SiteNavbar() {
 
   return (
     <Navbar 
-      className="shadow-sm"
-      style={{
-        backgroundColor: 'white',
-        borderBottom: '1px solid rgba(236, 72, 153, 0.2)',
-        boxShadow: '0 2px 4px rgba(236, 72, 153, 0.1)'
-      }} 
+      className={`shadow-sm ${isDarkMode ? 'navbar-dark bg-dark' : 'navbar-light bg-white'}`} 
       expand="lg" 
       fixed="top"
     >
       <Container>
-        <Navbar.Brand as={Link} href="/" className="fw-bold fs-4" style={{ color: '#be185d' }}>
-          💒 Spaces
+        <Navbar.Brand as={Link} href="/" className="fw-bold fs-4">
+          📸 ShareSpace
         </Navbar.Brand>
         
         <Navbar.Toggle aria-controls="main-navbar" />
@@ -150,16 +122,16 @@ export default function SiteNavbar() {
           <Nav className="ms-auto align-items-center gap-2">
             
             {/* Public Navigation */}
-            <Nav.Link as={Link} href="/public-spaces" className="fw-semibold px-3" style={{ color: '#be185d' }}>
-              💕 Wedding Gallery
+            <Nav.Link as={Link} href="/public-spaces" className="fw-semibold px-3">
+              🌐 Explore
             </Nav.Link>
             
             {user && (
               <>
-                <Nav.Link as={Link} href="/create-space" className="fw-semibold px-3" style={{ color: '#be185d' }}>
-                  💍 Create Wedding
+                <Nav.Link as={Link} href="/create-space" className="fw-semibold px-3">
+                  ➕ Create
                 </Nav.Link>
-                <Nav.Link as={Link} href="/dashboard" className="fw-semibold px-3" style={{ color: '#be185d' }}>
+                <Nav.Link as={Link} href="/dashboard" className="fw-semibold px-3">
                   📊 Dashboard
                 </Nav.Link>
               </>
@@ -244,9 +216,8 @@ export default function SiteNavbar() {
                 <NavDropdown.Item 
                   onClick={handleLogout}
                   className="text-danger"
-                  disabled={isLoading}
                 >
-                  {isLoading ? '⏳ Signing Out...' : '🚪 Sign Out'}
+                  🚪 Sign Out
                 </NavDropdown.Item>
               </NavDropdown>
             ) : (
@@ -255,26 +226,18 @@ export default function SiteNavbar() {
                   <>
                     <Link href="/login">
                       <Button 
+                        variant="outline-primary" 
                         size="sm"
                         className="px-3"
-                        style={{
-                          border: '2px solid #ec4899',
-                          backgroundColor: 'transparent',
-                          color: '#be185d'
-                        }}
                       >
                         Sign In
                       </Button>
                     </Link>
                     <Link href="/signup">
                       <Button 
+                        variant="primary" 
                         size="sm"
                         className="px-3"
-                        style={{
-                          background: 'linear-gradient(45deg, #ec4899, #f59e0b)',
-                          border: 'none',
-                          color: 'white'
-                        }}
                       >
                         Sign Up
                       </Button>

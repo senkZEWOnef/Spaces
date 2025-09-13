@@ -37,10 +37,9 @@ export const SessionProvider = ({
     load();
 
     const { data: authListener } = supabase.auth.onAuthStateChange(
-      (event: AuthChangeEvent, session: Session | null) => {
-        console.log('Auth state change:', event, session?.user?.email);
+      (_event: AuthChangeEvent, session: Session | null) => {
+        
         setSession(session);
-        setLoading(false);
       }
     );
 

@@ -30,7 +30,7 @@ export default function ManageUsersPage() {
   const handleRoleChange = async (userId: string, newRole: string) => {
     const { error } = await supabase
       .from("users")
-      .update({ role: newRole })
+      .update({ role: newRole } as { role: string })
       .eq("id", userId);
 
     if (error) {
