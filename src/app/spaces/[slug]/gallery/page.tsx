@@ -38,7 +38,8 @@ export default function GalleryPage() {
       const { data: photoData, error: photoError } = await supabase
         .from("photos")
         .select("*")
-        .eq("space_id", spaceData.id)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        .eq("space_id", (spaceData as any).id)
         .eq("approved", true);
       if (photoError) {
         console.error(photoError);

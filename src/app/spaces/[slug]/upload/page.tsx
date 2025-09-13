@@ -154,10 +154,12 @@ export default function UploadPage() {
         .eq('slug', String(slug))
         .single();
         
-      if (spaceError || !spaceData?.id) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      if (spaceError || !(spaceData as any)?.id) {
         throw new Error('Space not found');
       }
-      spaceId = spaceData.id;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      spaceId = (spaceData as any).id;
     } catch (error) {
       console.error('Space lookup error:', error);
       showMessage('Could not find the space. Please try again.', 'error');
@@ -223,7 +225,8 @@ export default function UploadPage() {
         });
 
         // Save photo record to database
-        const { error: dbError } = await supabase
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { error: dbError } = await (supabase as any)
           .from('photos')
           .insert({
             space_id: spaceId,

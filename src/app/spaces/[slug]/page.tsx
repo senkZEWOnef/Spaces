@@ -52,21 +52,26 @@ export default function EventDetailsPage() {
       }
 
       setSpace({
-        ...spaceData,
-        slug: spaceData.slug || "",
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        ...(spaceData as any),
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        slug: (spaceData as any).slug || "",
       });
 
       // ✅ Fetch cohost emails from view, filter out nulls safely
       const { data: cohostData, error: cohostError } = await supabase
         .from("cohosts_with_email")
         .select("cohost_email")
-        .eq("space_id", spaceData.id);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        .eq("space_id", (spaceData as any).id);
 
       if (cohostError) {
         console.error("Error fetching cohosts:", cohostError);
       } else {
-        const emails = cohostData
-          .map((c) => c.cohost_email)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const emails = (cohostData as any[])
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          .map((c: any) => c.cohost_email)
           .filter((e): e is string => e !== null);
         setCohosts(emails);
       }

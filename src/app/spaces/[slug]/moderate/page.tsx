@@ -45,7 +45,8 @@ export default function ModeratePage() {
   }, [slug]);
 
   const toggleApproval = async (photoId: string, approve: boolean) => {
-    await supabase
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await (supabase as any)
       .from("photos")
       .update({ approved: approve })
       .eq("id", photoId);

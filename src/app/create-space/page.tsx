@@ -76,7 +76,8 @@ export default function CreateSpacePage() {
       imageUrl = publicUrl;
     }
 
-    const { data: insertedSpaces, error: insertError } = await supabase
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: insertedSpaces, error: insertError } = await (supabase as any)
       .from("spaces")
       .insert([
         {
@@ -99,16 +100,20 @@ export default function CreateSpacePage() {
     }
 
     if (cohostEmail) {
-      const { data: cohostUser, error: userLookupError } = await supabase
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data: cohostUser, error: userLookupError } = await (supabase as any)
         .from("users")
         .select("id")
         .eq("email", cohostEmail)
         .single();
 
       if (!userLookupError && cohostUser) {
-        await supabase.from("cohosts").insert({
-          space_id: insertedSpaces.id,
-          cohost_id: cohostUser.id,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        await (supabase as any).from("cohosts").insert({
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          space_id: (insertedSpaces as any).id,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          cohost_id: (cohostUser as any).id,
         });
       }
     }

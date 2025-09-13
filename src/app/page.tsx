@@ -137,8 +137,7 @@ export default function HomePage() {
                   gap: '2rem',
                   marginBottom: '2.5rem',
                   flexWrap: 'wrap',
-                  justifyContent: 'center',
-                  justifyContent: 'flex-start'
+                  justifyContent: 'center'
                 }}>
                   <div style={{ textAlign: 'center' }}>
                     <div style={{

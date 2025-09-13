@@ -28,20 +28,27 @@ export default function ManageUsersPage() {
   };
 
   const handleRoleChange = async (userId: string, newRole: string) => {
-    const { error } = (await supabase
-      .from("users")
-      .update({ role: newRole })
-      .eq("id", userId)) as { error: null | { message: string } };
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const supabaseClient = supabase as any;
+      const { error } = await supabaseClient
+        .from("users")
+        .update({ role: newRole })
+        .eq("id", userId);
 
-    if (error) {
-      console.error("Role update failed:", error.message);
-      alert("Role update failed.");
-    } else {
-      // ✅ Update local state
-      setUsers((prev) =>
-        prev.map((u) => (u.id === userId ? { ...u, role: newRole } : u))
-      );
-      alert(`Role updated to ${newRole}!`);
+      if (error) {
+        console.error("Role update failed:", error.message);
+        alert("Role update failed.");
+      } else {
+        // ✅ Update local state
+        setUsers((prev) =>
+          prev.map((u) => (u.id === userId ? { ...u, role: newRole } : u))
+        );
+        alert(`Role updated to ${newRole}!`);
+      }
+    } catch (err) {
+      console.error("Unexpected error:", err);
+      alert("An unexpected error occurred.");
     }
   };
 

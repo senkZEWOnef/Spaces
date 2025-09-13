@@ -36,12 +36,14 @@ export default function DashboardPage() {
       setLoading(true);
       const userId = session.user.id;
 
-      const { data: userData } = await supabase
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data: userData } = await (supabase as any)
         .from("users")
         .select("role")
         .eq("id", userId)
         .single();
-      if (userData?.role === "admin") setIsAdmin(true);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      if ((userData as any)?.role === "admin") setIsAdmin(true);
 
       const { data: hostData } = await supabase
         .from("spaces")
@@ -49,11 +51,13 @@ export default function DashboardPage() {
         .eq("created_by", userId);
       setHostSpaces(hostData ?? []);
 
-      const { data: cohostLinks } = await supabase
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data: cohostLinks } = await (supabase as any)
         .from("cohosts")
         .select("space_id")
         .eq("cohost_id", userId);
-      const cohostIds = (cohostLinks ?? []).map((c) => c.space_id);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const cohostIds = (cohostLinks ?? []).map((c: any) => c.space_id);
       if (cohostIds.length > 0) {
         const { data: cohostSpacesData } = await supabase
           .from("spaces")

@@ -45,7 +45,8 @@ export default function SiteNavbar() {
           if (error && error.code !== 'PGRST116') {
             console.error("Role fetch error:", error);
           }
-          setRole(userData?.role ?? null);
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          setRole((userData as any)?.role ?? null);
         } else {
           setRole(null);
         }
@@ -69,7 +70,8 @@ export default function SiteNavbar() {
               .select("role")
               .eq("id", session.user.id)
               .single();
-            setRole(userData?.role ?? null);
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          setRole((userData as any)?.role ?? null);
           } catch (error) {
             console.error('Role fetch failed:', error);
             setRole(null);
